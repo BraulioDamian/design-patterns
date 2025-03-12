@@ -50,23 +50,6 @@ generador.generarReporte(fechaInicio, fechaFin);
 generador.generarReporteInventario();
 ```
 
-## Ventajas
-
-1. **Consistencia**: Asegura que todos los componentes de una familia de reportes trabajen juntos correctamente
-2. **Aislamiento**: Las implementaciones concretas están aisladas del código cliente
-3. **Extensibilidad**: Se pueden agregar nuevos tipos de reportes creando nuevas fábricas concretas
-4. **Flexibilidad**: El código cliente trabaja con interfaces, no con clases concretas
-
-## Adicional
-
-Este sistema de generación de reportes permite la creación de reportes personalizados, facilitando la adaptación a diferentes necesidades del negocio. Además, el uso del patrón Abstract Factory promueve un diseño modular y mantenible, lo que simplifica la incorporación de nuevas funcionalidades y la realización de cambios en el sistema.
-
-## Beneficios del Patrón Abstract Factory
-
-- **Flexibilidad**: Permite cambiar fácilmente la familia de productos utilizados en tiempo de ejecución.
-- **Reutilización de código**: Promueve la reutilización de componentes comunes entre diferentes tipos de reportes.
-- **Bajo acoplamiento**: Reduce la dependencia entre las clases concretas y el código cliente.
-
 ## Extensión del Sistema
 
 Para agregar un nuevo tipo de reporte:
@@ -79,3 +62,168 @@ Para agregar un nuevo tipo de reporte:
 ## Diagrama de clases (simplificado)
 
 ![Diagrama de clases](./uml.png)
+
+## Comparacion
+
+# Comparación: Implementación Original vs. Patrón Abstract Factory
+
+## 1. Estructura del Código
+
+### Implementación Original
+
+La implementación original utilizaba un enfoque monolítico donde todas las responsabilidades estaban concentradas en pocas clases:
+
+- `GenerarReportePDF`: Manejaba toda la lógica de generación de reportes, formateo y contenido
+- `ChartGenerator`: Generaba todos los tipos de gráficos
+- Sin separación clara entre los diferentes componentes de los reportes
+
+```
+GenerarReportePDF
+  ├── generarReporte()
+  ├── agregarGraficasYDescripciones()
+  ├── agregarSeccionConGraficaYDescripcion()
+  ├── agregarReporteEmpleado()
+  ├── agregarVentasEmpleado()
+  ├── agregarProductosVendidosEmpleado()
+  └── agregarDesempeñoEmpleado()
+
+ChartGenerator
+  ├── initialize()
+  ├── crearGraficas()
+  ├── generarGraficaVentasPorProducto()
+  ├── generarGraficaVentasPorEmpleado()
+  └── generarGraficaProductosMenosVendidos()
+```
+
+### Nueva Implementación (Abstract Factory)
+
+La nueva implementación separa las responsabilidades en interfaces y clases especializadas:
+
+```
+ReportFactory (interfaz)
+  ├── SalesReportFactory
+  └── InventoryReportFactory
+
+ChartGenerator (interfaz)
+  ├── SalesChartGenerator
+  └── InventoryChartGenerator
+
+ReportContentGenerator (interfaz)
+  ├── SalesReportContentGenerator
+  └── InventoryReportContentGenerator
+
+ReportFormatter (interfaz)
+  ├── SalesReportFormatter
+  └── InventoryReportFormatter
+
+ReportDirector
+  └── generateReport()
+
+GenerarReportePDF (simplificado)
+  ├── generarReporte()
+  └── generarReporteInventario()
+```
+
+## 2. Flujo de Ejecución
+
+### Implementación Original
+
+1. `GenerarReportePDF.generarReporte()` crea el documento PDF
+2. Llama directamente a métodos internos para agregar cada parte del reporte
+3. Crea una instancia de `ChartGenerator` para generar los gráficos
+4. Accede directamente a la base de datos para obtener información
+
+```java
+// Ejemplo del código original
+public void generarReporte(Date fechaInicio, Date fechaFin) {
+    Document document = new Document();
+    PdfWriter.getInstance(document, new FileOutputStream(rutaArchivo));
+    document.open();
+    
+    // Añadir título principal
+    Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+    Paragraph titulo = new Paragraph("Reporte de Ventas", fontTitulo);
+    document.add(titulo);
+    
+    // Añadir las gráficas y sus descripciones
+    agregarGraficasYDescripciones(document, fechaInicio, fechaFin);
+    
+    // Obtener los datos de los empleados y sus ventas
+    CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
+    List<Usuario> usuarios = dao.obtenerTodosLosUsuarios();
+    
+    for (Usuario usuario : usuarios) {
+        agregarReporteEmpleado(document, dao, usuario, fechaInicio, fechaFin);
+    }
+    
+    document.close();
+}
+```
+
+### Nueva Implementación (Abstract Factory)
+
+1. `GenerarReportePDF` crea la fábrica apropiada según el tipo de reporte
+2. Crea un `ReportDirector` con la fábrica
+3. El director coordina la creación del reporte usando los componentes creados por la fábrica
+
+```java
+// Ejemplo con el patrón Abstract Factory
+public void generarReporte(Date fechaInicio, Date fechaFin) {
+    // Crear una fábrica de reportes de ventas
+    ReportFactory reportFactory = new SalesReportFactory();
+    
+    // Crear un director de reportes con la fábrica
+    ReportDirector reportDirector = new ReportDirector(reportFactory);
+    
+    // Generar el reporte de ventas
+    reportDirector.generateReport("reportes/reporte_ventas.pdf", 
+                                "Reporte de Ventas", 
+                                fechaInicio, fechaFin);
+}
+```
+
+## 3. Comparación de Características
+
+| Característica | Implementación Original | Nueva Implementación |
+|----------------|-------------------------|----------------------|
+| **Extensibilidad** | Limitada - Agregar nuevos tipos de reportes requiere modificar clases existentes | Alta - Nuevos tipos de reportes pueden agregarse creando nuevas fábricas y componentes |
+| **Cohesión** | Baja - Clases con múltiples responsabilidades | Alta - Cada clase tiene una única responsabilidad bien definida |
+| **Acoplamiento** | Alto - Dependencias directas entre componentes | Bajo - Dependencias a través de interfaces |
+| **Reutilización** | Baja - Código difícil de reutilizar | Alta - Componentes individuales pueden reutilizarse |
+| **Mantenibilidad** | Difícil - Cambios en un reporte afectan a otros | Fácil - Cambios aislados a componentes específicos |
+| **Complejidad inicial** | Baja - Estructura más simple | Media - Más clases e interfaces |
+| **Organización del código** | Baja - Estructura monolítica | Alta - Estructura jerárquica y modular |
+
+## 4. Beneficios de la Nueva Implementación
+
+1. **Mejor organización del código**:
+   - Separación clara de responsabilidades
+   - Cada componente se enfoca en una tarea específica
+
+2. **Mayor flexibilidad**:
+   - Fácil agregar nuevos tipos de reportes
+   - Fácil modificar componentes individuales
+
+3. **Mejor mantenibilidad**:
+   - Los cambios en un tipo de reporte no afectan a otros
+   - Menor riesgo de introducir errores
+
+4. **Conformidad con principios SOLID**:
+   - Principio de Responsabilidad Única
+   - Principio de Abierto/Cerrado
+   - Principio de Inversión de Dependencias
+
+5. **Soporte para futuras extensiones**:
+   - Estructura para agregar nuevos tipos de reportes (financieros, administrativos, etc.)
+   - Capacidad de reemplazar implementaciones específicas sin afectar el resto del sistema
+
+
+## 6. Conclusión
+
+La implementación con el patrón Abstract Factory proporciona una arquitectura más robusta, extensible y mantenible a costa de una mayor complejidad inicial. Para un sistema que necesita soportar múltiples tipos de reportes y que probablemente crecerá con el tiempo, los beneficios superan claramente las desventajas.
+
+La nueva implementación facilita:
+- Agregar nuevos tipos de reportes
+- Modificar el formato o contenido de reportes existentes
+- Reutilizar componentes entre diferentes tipos de reportes
+- Realizar cambios con menor riesgo de afectar otras partes del sistema
