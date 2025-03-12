@@ -27,25 +27,10 @@ public class Producto {
     private int cantidad;  // Campo adicional para la cantidad
 
     // Constructor
-    public Producto(int productoID, String nombre, String descripcion, int areaID, double precio, int unidadesDisponibles, int nivelReorden, LocalDate fechaCaducidad, String codigoBarras, String tamañoNeto, String marca, String contenido, String nombreArea,int cantidad) {
-        this.productoID = productoID;
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.areaID = areaID;
-        this.precio = precio;
-        this.unidadesDisponibles = unidadesDisponibles;
-        this.nivelReorden = nivelReorden;
-        this.fechaCaducidad = fechaCaducidad;
-        this.codigoBarras = codigoBarras;
-        this.tamañoNeto = tamañoNeto;
-        this.marca = marca;
-        this.contenido = contenido;
-        this.nombreArea = nombreArea; // Inicializar el nombre del área
-        this.cantidad = cantidad;  // Inicializa la cantidad
+    private Producto(){}
 
-    }
-
-    public Producto(){ 
+    public static ProductoBuilder builder(){
+        return new ProductoBuilder();
     }
     
     // Getters
@@ -186,4 +171,80 @@ public void setContenido(String contenido) {
                 ", cantidad=" + cantidad +
                 '}';
     }
+     // Clase Builder interna
+    public static class ProductoBuilder {
+        private Producto producto = new Producto();
+
+        public ProductoBuilder productoID(int productoID) {
+            producto.setProductoID(productoID);
+            return this;
+        }
+
+        public ProductoBuilder nombre(String nombre) {
+            producto.setNombre(nombre);
+            return this;
+        }
+
+        public ProductoBuilder precio(double precio) {
+            producto.setPrecio(precio);
+            return this;
+        }
+
+        public ProductoBuilder marca(String marca) {
+            producto.setMarca(marca);
+            return this;
+        }
+
+        // Métodos para TODOS los demás atributos...
+        public ProductoBuilder descripcion(String descripcion) {
+            producto.setDescripcion(descripcion);
+            return this;
+        }
+
+        public ProductoBuilder fechaCaducidad(LocalDate fecha) {
+            producto.setFechaCaducidad(fecha);
+            return this;
+        }
+        public ProductoBuilder areaID(int areaID){
+            producto.setAreaID(areaID);
+            return this;
+        }
+        public ProductoBuilder unidadesDisponibles(int unidadesDisponibles){
+            producto.setUnidadesDisponibles(unidadesDisponibles);
+            return this;
+        }
+        public ProductoBuilder nivelReorden(int nivelReorden){
+            producto.setNivelReorden(nivelReorden);
+            return this;
+        }
+       
+        public ProductoBuilder codigoBarras(String codigoBarras){
+            producto.setCodigoBarras(codigoBarras);
+            return this;
+        }
+        public ProductoBuilder tamañoNeto(String tamañoNeto){
+            producto.setTamañoNeto(tamañoNeto);
+            return this;
+        }
+        public ProductoBuilder contenido (String contenido){
+            producto.setContenido(contenido);
+            return this;
+        }
+        public ProductoBuilder nombreArea(String nombreArea){
+            producto.setNombreArea(nombreArea);
+            return this;
+        }
+        public ProductoBuilder cantidad( int cantidad){
+            producto.setCantidad(cantidad);
+            return this;
+        }
+        public Producto build() {
+            // Validaciones básicas (personaliza según necesidades)
+            if (producto.getNombre() == null || producto.getPrecio() <= 0) {
+                throw new IllegalArgumentException("Nombre y precio son obligatorios");
+            }
+            return producto;
+        }
+    }
 }
+
