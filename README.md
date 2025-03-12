@@ -3,7 +3,6 @@
 ## Participantes
 - **Builder**: `ProductoBuilder`, `UsuarioBuilder`.
 - **Productos Construidos**: `Producto`, `Usuario`.
-- **Responsable**: [Tu nombre].
 
 ## Finalidad
 - Simplificar la creación de objetos complejos con múltiples atributos.
