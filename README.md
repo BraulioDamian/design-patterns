@@ -218,7 +218,13 @@ public void generarReporte(Date fechaInicio, Date fechaFin) {
    - Capacidad de reemplazar implementaciones específicas sin afectar el resto del sistema
 
 
-## 6. Conclusión
+## 6. Comparacion en tiempo de ejecución
+
+Se puede ver una comparación haciendo logs de la apliacación en la implementación original y la implementación con el patrón Abstract Factory.
+
+[Comparativa de logs](./logs.md)
+
+## 7. Conclusión
 
 La implementación con el patrón Abstract Factory proporciona una arquitectura más robusta, extensible y mantenible a costa de una mayor complejidad inicial. Para un sistema que necesita soportar múltiples tipos de reportes y que probablemente crecerá con el tiempo, los beneficios superan claramente las desventajas.
 
