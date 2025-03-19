@@ -11,6 +11,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 # Nombre exacto del JAR
 COPY --from=build /app/target/Tienda-Abarrotes-1.0-SNAPSHOT-jar-with-dependencies.jar app.jar
+COPY src/main/resources ./resources
 
 # Instalar librerías X11 (Swing)
 RUN apt-get update && apt-get install -y \
