@@ -20,13 +20,15 @@ import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import login.SesionManager;
+
+import VentaMemento.CobroMemento;
+import VentaMemento.CobroOriginator;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -44,6 +46,83 @@ public class Cobro extends JFrame {
      */
     private double pre; // Total a pagar
     private double cambio;
+
+    public double getPre() {
+        return pre;
+    }
+
+    public void setPre(double pre) {
+        this.pre = pre;
+    }
+
+    public double getCambio() {
+        return cambio;
+    }
+
+    public void setCambio(double cambio) {
+        this.cambio = cambio;
+    }
+
+    public String getPrecioEnLetras() {
+        return precioEnLetras;
+    }
+
+    public void setPrecioEnLetras(String precioEnLetras) {
+        this.precioEnLetras = precioEnLetras;
+    }
+
+    public String getRecibi() {
+        return recibi.getText();
+    }
+
+    public void setRecibi(String recibi) {
+        this.recibi.setText(recibi);
+    }
+
+    public boolean isEfectivoSeleccionado() {
+        return efectivo.isSelected();
+    }
+
+    public void setEfectivoSeleccionado(boolean efectivoSeleccionado) {
+        this.efectivo.setSelected(efectivoSeleccionado);
+    }
+
+    public boolean isTarjetaSeleccionada() {
+        return tarjeta.isSelected();
+    }
+
+    public void setTarjetaSeleccionada(boolean tarjetaSeleccionada) {
+        this.tarjeta.setSelected(tarjetaSeleccionada);
+    }
+
+    public String getCorreo() {
+        return txtCorreo.getText();
+    }
+
+    public void setCorreo(String correo) {
+        this.txtCorreo.setText(correo);
+    }
+
+    public CobroMemento saveStateToMemento() {
+        return new CobroMemento(pre, cambio, precioEnLetras, recibi.getText(), efectivo.isSelected(), tarjeta.isSelected(), txtCorreo.getText());
+    }
+
+    public void getStateFromMemento(CobroMemento memento) {
+        pre = memento.getPre();
+        cambio = memento.getCambio();
+        precioEnLetras = memento.getPrecioEnLetras();
+        recibi.setText(memento.getRecibi());
+        efectivo.setSelected(memento.isEfectivoSeleccionado());
+        tarjeta.setSelected(memento.isTarjetaSeleccionada());
+        txtCorreo.setText(memento.getCorreo());
+    }
+
+    CobroOriginator originator = new CobroOriginator(this);
+    CobroMemento savedState;
+    //originator.restore(savedState);
+
+
+
     NumeroEnPalabras converter = new NumeroEnPalabras();
     String precioEnLetras;
     List<Producto> productos;  // Lista de productos para generar el ticket
@@ -163,6 +242,8 @@ public class Cobro extends JFrame {
         tarjeta = new javax.swing.JRadioButton();
         camb = new javax.swing.JLabel();
         txtCorreo = new javax.swing.JTextField();
+        btnGuardar = new javax.swing.JButton();
+        btnRestore = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 102, 0));
@@ -245,12 +326,26 @@ public class Cobro extends JFrame {
 
         txtCorreo.setBorder(javax.swing.BorderFactory.createTitledBorder("Correo Electronico"));
 
+        btnGuardar.setText("Guardar Estado");
+        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardarActionPerformed(evt);
+            }
+        });
+
+        btnRestore.setText("Restaurar Estado");
+        btnRestore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRestoreActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(23, Short.MAX_VALUE)
+                .addContainerGap(56, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(74, 74, 74))
             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -260,16 +355,20 @@ public class Cobro extends JFrame {
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(efectivo)
                     .addComponent(tarjeta, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(166, 166, 166)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(recibi, javax.swing.GroupLayout.DEFAULT_SIZE, 127, Short.MAX_VALUE)
                             .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(camb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(btnRestore, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnGuardar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnAceptar, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -298,7 +397,9 @@ public class Cobro extends JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton4)
-                    .addComponent(btnAceptar))
+                    .addComponent(btnAceptar)
+                    .addComponent(btnGuardar)
+                    .addComponent(btnRestore))
                 .addGap(71, 71, 71))
         );
 
@@ -368,9 +469,32 @@ public class Cobro extends JFrame {
         }
     }//GEN-LAST:event_btnAceptarActionPerformed
 
+
+    private void btnGuardar(java.awt.event.ActionEvent evt) {
+        savedState = originator.save();
+        JOptionPane.showMessageDialog(this, "Estado guardado");
+    }
+
+    private void btnRestore(java.awt.event.ActionEvent evt) {
+        originator.restore(savedState);
+        JOptionPane.showMessageDialog(this, "Estado restaurado");
+    }
+
+
+
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
       dispose();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void btnRestoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestoreActionPerformed
+        originator.restore(savedState);
+        JOptionPane.showMessageDialog(this, "Estado Restaurado");
+    }//GEN-LAST:event_btnRestoreActionPerformed
+
+    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+        savedState=originator.save();
+        JOptionPane.showMessageDialog(this, "Estado Guardado");
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
 
     
@@ -530,6 +654,8 @@ public class Cobro extends JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnGuardar;
+    private javax.swing.JButton btnRestore;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel camb;
     private javax.swing.JRadioButton efectivo;

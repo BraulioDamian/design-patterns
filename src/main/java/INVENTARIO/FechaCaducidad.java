@@ -19,9 +19,9 @@ import java.util.logging.Level;
 public class FechaCaducidad {
         private static final Logger LOGGER = Logger.getLogger(Conexion_DB.class.getName());
 
-    private static final String URL = "jdbc:mysql://localhost:3307/dbtienda";
+    private static final String URL = "jdbc:mysql://localhost:3306/dbtienda";
     private static final String USUARIO = "root";
-    private static final String CONTRASENA = "123456";
+    private static final String CONTRASENA = "Wizardkiller#02";
 
     static {
         try {
