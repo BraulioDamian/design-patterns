@@ -31,12 +31,12 @@ public class Conexion_DB {
 
 
     private static final String URL = "jdbc:mysql://" +
-            System.getenv("DB_HOST") + ":" +
-            System.getenv("DB_PORT") + "/" +
-            System.getenv("DB_NAME") +
+            "localhost" + ":" +
+            "3306" + "/" +
+            "dbtienda" +
             "?useUnicode=true&characterEncoding=UTF-8";  // Agrega esto
-    private static final String USUARIO = System.getenv("DB_USER");
-    private static final String CONTRASENA = System.getenv("DB_PASSWORD");
+    private static final String USUARIO = "root";
+    private static final String CONTRASENA = "$Carlos1030";
 
 
     // Logger para registrar información y errores
