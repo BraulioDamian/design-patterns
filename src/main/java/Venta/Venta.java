@@ -492,13 +492,6 @@ private void agregarProductoACobroYCerrarTabla() {
     int selectedRow = TablaBusqueda.getSelectedRow();
     if (selectedRow != -1) {
         Producto selectedProduct = listaFiltrada.get(selectedRow);
-        int cantidadDisponible = selectedProduct.getUnidadesDisponibles();
-
-        if (cantidadDisponible <= 0) {
-            JOptionPane.showMessageDialog(this, "Producto " + selectedProduct.getNombre() + " agotado.", "Error de cantidad", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
         DefaultTableModel modelCobro = (DefaultTableModel) TablaCobro.getModel();
         boolean existeProducto = false;
 
@@ -508,14 +501,9 @@ private void agregarProductoACobroYCerrarTabla() {
             if (productoIDTabla == selectedProduct.getProductoID()) {
                 int cantidadActual = Integer.parseInt(modelCobro.getValueAt(i, 2).toString());
                 cantidadActual++;
-                if (cantidadActual > cantidadDisponible) {
-                    JOptionPane.showMessageDialog(this, "No se pueden añadir más unidades del producto " + selectedProduct.getNombre() + " debido a la falta de stock.", "Error de stock", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
                 modelCobro.setValueAt(cantidadActual, i, 2);
                 double precioUnitario = Double.parseDouble(modelCobro.getValueAt(i, 4).toString());
-                double importe = precioUnitario * cantidadActual;
-                modelCobro.setValueAt(String.format("%.2f", importe), i, 5);  // Formatear a dos decimales
+                modelCobro.setValueAt(precioUnitario * cantidadActual, i, 5);
                 existeProducto = true;
                 break;
             }
@@ -528,8 +516,8 @@ private void agregarProductoACobroYCerrarTabla() {
                 selectedProduct.getCodigoBarras(),
                 1, // Unidades
                 selectedProduct.getNombre(),
-                String.format("%.2f", selectedProduct.getPrecio()), // Formato a dos decimales
-                String.format("%.2f", selectedProduct.getPrecio()) // Importe inicial es igual al precio unitario
+                selectedProduct.getPrecio(),
+                selectedProduct.getPrecio() // Importe inicial es igual al precio unitario
             });
         }
 

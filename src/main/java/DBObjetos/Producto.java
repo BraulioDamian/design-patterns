@@ -6,7 +6,7 @@ package DBObjetos;
 
 import java.time.LocalDate;
 
-public class Producto {
+public class Producto implements Producto2{
     private int productoID;
     private String nombre;
     private String descripcion;
@@ -22,6 +22,20 @@ public class Producto {
     private String nombreArea;
     private int cantidad;
 
+    public Producto(int productoID, String nombre, double precio, int cantidad) {
+        this.productoID = productoID;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad = cantidad;
+    }
+
+    public Producto(int productoID, String codigoBarras, String nombre, double precio, int cantidad) {
+        this.productoID = productoID;
+        this.codigoBarras = codigoBarras;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.cantidad = cantidad;
+    }
     // Constructor privado para usar con el Builder
     private Producto(ProductoBuilder builder) {
         this.productoID = builder.productoID;
@@ -45,10 +59,13 @@ public class Producto {
     }
 
     // Getters
+    @Override
     public int getProductoID() { return productoID; }
+    @Override
     public String getNombre() { return nombre; }
     public String getDescripcion() { return descripcion; }
     public int getAreaID() { return areaID; }
+    @Override
     public double getPrecio() { return precio; }
     public int getUnidadesDisponibles() { return unidadesDisponibles; }
     public int getNivelReorden() { return nivelReorden; }
@@ -58,6 +75,7 @@ public class Producto {
     public String getMarca() { return marca; }
     public String getContenido() { return contenido; }
     public String getNombreArea() { return nombreArea; }
+    @Override
     public int getCantidad() { return cantidad; }
 
     // Setters 
@@ -74,6 +92,7 @@ public class Producto {
     public void setMarca(String marca) { this.marca = marca; }
     public void setContenido(String contenido) { this.contenido = contenido; }
     public void setNombreArea(String nombreArea) { this.nombreArea = nombreArea; }
+    @Override
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 
     // toString (igual que antes)

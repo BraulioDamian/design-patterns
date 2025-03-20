@@ -25,7 +25,7 @@ public class HashingUtil {
     }
     
         public static void main(String[] args) {
-        String passwordToHash = "contraseñaAdmin";
+        String passwordToHash = "contraseñaAlexis";
                 String passwordToHash2 = "contraseñaGerente";
 
         String hashedPassword = hashPassword(passwordToHash);
