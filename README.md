@@ -139,3 +139,270 @@ Para acceder al historial:
 La implementación del patrón Memento en el sistema de cobro proporciona una mejora significativa en la experiencia del usuario y en la robustez de la aplicación. Esta nueva arquitectura no solo soluciona las limitaciones de la versión original, sino que establece una base sólida para futuras mejoras y extensiones del sistema.
 
 El código ha sido diseñado siguiendo principios SOLID, lo que garantiza su mantenibilidad y extensibilidad a largo plazo. La clara separación de responsabilidades facilita la comprensión del código y permite a otros desarrolladores trabajar en el proyecto sin dificultad.
+
+
+# Implementación del Patrón Facade
+
+## Descripción del Proyecto
+
+Este proyecto implementa un sistema de cobro para un Punto de Venta (POS) en Java, diseñado para procesar pagos, validar métodos de pago, calcular el cambio, generar tickets en formato PDF y enviarlos por correo electrónico. La versión actual utiliza el patrón de diseño **Facade** para encapsular la lógica compleja y mejorar la modularidad, mantenibilidad y claridad del código.
+
+El sistema interactúa con una interfaz gráfica (Swing) y delega responsabilidades a subsistemas como la generación de PDFs (`iText`) y el envío de correos electrónicos (`EnvioTicket`).
+
+---
+
+## Estructura del Proyecto
+
+- **Paquete `CobroFacade`**: Contiene la clase `PagoFacade`, que actúa como la fachada principal.
+- **Clase `Cobro`**: Interfaz gráfica que interactúa con el usuario y utiliza `PagoFacade` para procesar las operaciones de cobro.
+- **Subsistemas**:
+  - Generación de tickets PDF (usando `iText`).
+  - Envío de correos electrónicos (delegado a `EnvioTicket`).
+  - Gestión de sesiones (`SesionManager`).
+- **Dependencias**:
+  - `iText` para la generación de PDFs.
+  - `javax.swing` para la interfaz gráfica.
+
+---
+
+## Implementación del Patrón Facade
+
+El patrón **Facade** se implementa mediante la clase `PagoFacade`, que proporciona una interfaz simplificada para las siguientes operaciones:
+1. **Validación del método de pago** (`validarMetodoDePago`): Verifica si se seleccionó un método de pago (efectivo o tarjeta).
+2. **Validación del monto** (`validarMonto`): Comprueba que el monto ingresado sea suficiente para cubrir el total.
+3. **Cálculo del cambio** (`calcularCambio`): Calcula el cambio a devolver al cliente.
+4. **Generación del ticket PDF** (`generarPDF`): Crea un archivo PDF con los detalles de la venta.
+5. **Envío del ticket por correo** (`enviarTicketPorCorreo`): Envía el ticket al correo especificado o permite continuar sin enviarlo.
+
+El cliente (clase `Cobro`) interactúa únicamente con `PagoFacade`, sin necesidad de conocer los detalles internos de los subsistemas.
+
+---
+
+## Comparación entre la Versión Anterior y la Actual
+
+### Versión Anterior
+En la versión anterior, toda la lógica estaba contenida dentro del método `btnAceptarActionPerformed` y la función `generarPDF` de la clase `Cobro`. Esto generaba los siguientes problemas:
+
+- **Alta cohesión y acoplamiento**: La clase `Cobro` manejaba directamente la validación, el cálculo del cambio, la generación del PDF y el envío por correo, lo que la hacía dependiente de múltiples subsistemas (`iText`, `EnvioTicket`, etc.).
+- **Código monolítico**: La lógica estaba mezclada con la interfaz gráfica, dificultando su reutilización y mantenimiento.
+- **Falta de modularidad**: Cualquier cambio en la generación del PDF o en el envío del correo requería modificar directamente la clase `Cobro`.
+- **Ejemplo de código**:
+  ```java
+  private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        // Primero, verifica si algún método de pago ha sido seleccionado.
+        if (!efectivo.isSelected() && !tarjeta.isSelected()) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione un método de pago.");
+            return;
+        }
+
+        // Intenta procesar el pago y generar/enviar el ticket.
+        try {
+            double pago = Double.parseDouble(recibi.getText());  // Intenta obtener el pago ingresado.
+            if (pago < pre) {
+                JOptionPane.showMessageDialog(this, "El monto pagado no es suficiente para cubrir el total de la compra.");
+                return;
+            }
+            cambio = pago - pre;
+            camb.setText("$" + String.format("%.2f", cambio));
+
+            // Genera el ticket y obtiene la ruta del PDF generado.
+            String pdfPath = generarPDF(productos, pre, pago, cambio);
+            if (pdfPath != null) {
+                // Verifica si se ha ingresado un correo electrónico.
+                String emailDestino = txtCorreo.getText();
+                if (emailDestino.isEmpty()) {
+                    int opcion = JOptionPane.showConfirmDialog(this, "No ha ingresado un correo electrónico. ¿Desea continuar sin enviar el ticket por correo?", "Correo no ingresado", JOptionPane.YES_NO_OPTION);
+                    if (opcion == JOptionPane.NO_OPTION) {
+                        return; // Si el usuario selecciona NO, no se procede.
+                    }
+                } else {
+                    EnvioTicket.enviarConArchivo(emailDestino, pdfPath);  // Enviar el PDF por correo
+                    JOptionPane.showMessageDialog(this, "El ticket ha sido enviado correctamente a: " + emailDestino);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al generar el ticket PDF.");
+            }
+            
+            // Notifica a la ventana Venta que la venta se ha completado
+            if (ventaListener != null) {
+                ventaListener.onVentaCompleta();
+            }
+
+            // Cierra la ventana Cobro
+            dispose();
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, introduzca un monto válido en el campo 'Recibí'.");
+        }
+    }//GEN-LAST:event_btnAceptarActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+      dispose();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+
+    
+    private String generarPDF(List<Producto> productosSeleccionados, double total, double pago, double cambio) {
+        Document document = new Document();
+        String fileName = "Ticket_" + System.currentTimeMillis() + ".pdf";  // Nombre del archivo con marca de tiempo
+        String filePath = "./tickets/" + fileName;  // Guardar en un directorio específico
+        LocalDateTime fechaActual= LocalDateTime.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String fechaHoraFormateada = fechaActual.format(formato);
+
+        // Asegúrate de que el directorio tickets existe o créalo
+        new File("./tickets").mkdirs();
+
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream(filePath));
+            document.open();
+            
+            Usuario usuario = SesionManager.getInstance().getUsuarioLogueado();
+
+            Font bold = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+            Font normal = FontFactory.getFont(FontFactory.HELVETICA, 12);
+            Font gigante = FontFactory.getFont(FontFactory.HELVETICA,16);
+            
+            Paragraph Titulo = new Paragraph("ABARROTES DON LUIS", gigante);
+            Titulo.setAlignment(Element.ALIGN_CENTER);
+            document.add(Titulo);   
+            
+            document.add(new Paragraph(""));
+            document.add(new Paragraph(""));
+            
+            document.add(new Paragraph("Ticket de compra",normal));
+            document.add(new Paragraph("Cajero: " + usuario.getNombreCompleto()));
+            
+            document.add(new Paragraph(""));
+            document.add(new Paragraph(""));
+            
+            Paragraph fechaParrafo = new Paragraph("Fecha y Hora: " + fechaHoraFormateada, normal);
+            fechaParrafo.setAlignment(Element.ALIGN_RIGHT);
+            document.add(fechaParrafo);            
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("")); 
+            
+            document.add(new Paragraph("RFC: VECJ880326", normal));
+            document.add(new Paragraph("Régimen fiscal: 601-Ley General de Personas Morales", normal));
+            document.add(new Paragraph("Emitido en: Heroica Escuela Naval Militar 917, Reforma Centro, 68050 Oaxaca de Juárez, Oax", normal));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
+            
+
+            PdfPTable table = new PdfPTable(new float[]{1, 2, 1, 1, 1});
+            table.setWidthPercentage(100);
+            String[] headers = {"Código", "Producto", "Unidades", "Precio Uni.", "Importe"};
+            for (String header : headers) {
+                PdfPCell cell = new PdfPCell(new Paragraph(header, bold));
+                cell.setBorder(PdfPCell.NO_BORDER);
+                table.addCell(cell);
+            }
+
+            for (Producto producto : productosSeleccionados) {
+                PdfPCell cell = new PdfPCell(new Paragraph(String.valueOf(producto.getProductoID()), normal));
+                cell.setBorder(PdfPCell.NO_BORDER);
+                table.addCell(cell);
+                cell = new PdfPCell(new Paragraph(producto.getNombre(), normal));
+                cell.setBorder(PdfPCell.NO_BORDER);
+                table.addCell(cell);
+                cell = new PdfPCell(new Paragraph(String.valueOf(producto.getCantidad()), normal));
+                cell.setBorder(PdfPCell.NO_BORDER);
+                table.addCell(cell);
+                cell = new PdfPCell(new Paragraph(String.format("$%.2f", producto.getPrecio()), normal));
+                cell.setBorder(PdfPCell.NO_BORDER);
+                table.addCell(cell);
+                cell = new PdfPCell(new Paragraph(String.format("$%.2f", producto.getPrecio() * producto.getCantidad()), normal));
+                cell.setBorder(PdfPCell.NO_BORDER);
+                table.addCell(cell);
+            }
+
+            document.add(table);
+            
+            
+            document.add(new Paragraph(" "));            
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
+            
+            
+            Paragraph totalParrafo = new Paragraph(String.format("Total: $%.2f", total), bold);
+            totalParrafo.setAlignment(Element.ALIGN_RIGHT);
+            document.add(totalParrafo);
+
+            Paragraph pagoParrafo = new Paragraph(String.format("Pago en efectivo: $%.2f", pago), normal);
+            pagoParrafo.setAlignment(Element.ALIGN_RIGHT);
+            document.add(pagoParrafo);
+
+            Paragraph cambioParrafo = new Paragraph(String.format("Cambio: $%.2f", cambio), normal);
+            cambioParrafo.setAlignment(Element.ALIGN_RIGHT);
+            document.add(cambioParrafo);
+                        
+            document.add(new Paragraph(" "));            
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph(" "));
+
+            Paragraph graciasParrafo = new Paragraph("¡GRACIAS POR SU COMPRA!", bold);
+            graciasParrafo.setAlignment(Element.ALIGN_CENTER);
+            document.add(graciasParrafo);
+            
+            
+            document.close();
+
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(new File(filePath));  // Opcional: abrir el archivo automáticamente
+            }
+
+            return filePath;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al generar el ticket: " + e.getMessage());
+            return null;
+        }
+    }
+
+
+
+### Versión Actual (con Facade)
+
+La versión actual introduce el patrón Facade mediante la clase `PagoFacade`, resolviendo los problemas anteriores:
+
+- **Encapsulación**: La lógica de validación, cálculo, generación de PDFs y envío de correos se traslada a `PagoFacade`, aislando los subsistemas del cliente (`Cobro`).
+- **Bajo acoplamiento**: `Cobro` solo depende de `PagoFacade` y no de los subsistemas subyacentes, como `iText` o `EnvioTicket`.
+- **Modularidad y reutilización**: La clase `PagoFacade` puede ser reutilizada en otros contextos del sistema POS sin modificar la interfaz gráfica.
+- **Código más limpio**: La lógica del evento `btnAceptarActionPerformed` se reduce a interacciones con `PagoFacade`, mejorando la legibilidad.
+
+**Ejemplo de código actualizado**:
+
+```java
+private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {
+    if (!pagoFacade.validarMetodoDePago(efectivo.isSelected(), tarjeta.isSelected())) {
+        return;
+    }
+    String textoRecibi = recibi.getText().trim();
+    if (textoRecibi.isEmpty() || !textoRecibi.matches("\\d+(\\.\\d+)?")) {
+        JOptionPane.showMessageDialog(this, "Por favor, introduzca un monto válido.");
+        return;
+    }
+    try {
+        double pago = Double.parseDouble(textoRecibi);
+        if (!pagoFacade.validarMonto(pago, pre)) {
+            return;
+        }
+        cambio = pagoFacade.calcularCambio(pago, pre);
+        camb.setText("$" + String.format("%.2f", cambio));
+        String pdfPath = pagoFacade.generarPDF(productos, pre, pago, cambio);
+        if (pdfPath != null) {
+            boolean flag = pagoFacade.enviarTicketPorCorreo(txtCorreo.getText(), pdfPath);
+            if (flag) {
+                ventaListener.onVentaCompleta();
+                dispose();
+            }
+        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Por favor, introduzca un monto válido.");
+    }
+}
+
+```
+## Conclusión
+
+La implementación del patrón Facade en este sistema de cobro no altera el funcionamiento esencial del programa: los usuarios siguen procesando pagos, generando tickets y enviándolos por correo de la misma manera. Sin embargo, la introducción de `PagoFacade` aporta beneficios significativos, como una mejor encapsulación de la lógica, un menor acoplamiento entre componentes y una mayor modularidad. Esto resulta en un código más limpio, fácil de mantener y reutilizable, lo que facilita futuras expansiones o modificaciones sin comprometer la estabilidad del sistema. En resumen, el patrón Facade mejora la estructura del proyecto sin sacrificar su funcionalidad original, alineándose con los principios de diseño de software robusto y escalable.
