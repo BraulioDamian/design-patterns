@@ -43,9 +43,19 @@ public class Cobro extends JFrame {
      * Creates new form Cobro
      */
 
+    private double montoTotal;
+
     PagoFacade pagoFacade = new PagoFacade();
 
     private CobroFacade cobroFacade;
+
+    public void iniciar() {
+        montoTotal = 0.0;
+    }
+
+    public void agregarMonto(double monto) {
+        montoTotal += monto;
+    }
 
     private double pre; // Total a pagar
     public double cambio;
@@ -123,13 +133,11 @@ public class Cobro extends JFrame {
 
     CobroOriginator originator = new CobroOriginator(this);
     CobroMemento savedState;
+    // originator.restore(savedState);
 
     NumeroEnPalabras converter = new NumeroEnPalabras();
-    
     String precioEnLetras;
-    
     List<Producto> productos; // Lista de productos para generar el ticket
-    
     private VentaListener ventaListener;
 
     public interface VentaListener {
@@ -477,6 +485,8 @@ public class Cobro extends JFrame {
                 }
 
             }
+
+            
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Por favor, introduzca un monto válido enel campo 'Recibí'.");
