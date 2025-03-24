@@ -48,6 +48,8 @@ public class Cobro extends JFrame {
     String precioEnLetras;
     List<Producto> productos;  // Lista de productos para generar el ticket
     private VentaListener ventaListener;
+     private ServicioEnvio servicioEnvio; // Campo para el servicio de envío
+
     
     public interface VentaListener {
         void onVentaCompleta();
@@ -83,7 +85,7 @@ public class Cobro extends JFrame {
 
   
     
-    public Cobro(double total, List<Producto> productos) {
+    public Cobro(double total, List<Producto> productos, ServicioEnvio servicioEnvio) {
         initComponents();
         setLocationRelativeTo(null); // Centra la ventana en la pantalla
 
@@ -102,6 +104,7 @@ public class Cobro extends JFrame {
                 Venta.getInstance().setVisible(true); // Vuelve a hacer visible la ventana de venta
             }
         });
+        this.servicioEnvio = servicioEnvio;
     }
 
     
@@ -347,10 +350,11 @@ public class Cobro extends JFrame {
                     if (opcion == JOptionPane.NO_OPTION) {
                         return; // Si el usuario selecciona NO, no se procede.
                     }
-                } else {
-                    EnvioTicket.enviarConArchivo(emailDestino, pdfPath);  // Enviar el PDF por correo
-                    JOptionPane.showMessageDialog(this, "El ticket ha sido enviado correctamente a: " + emailDestino);
-                }
+                }if (!emailDestino.isEmpty()) {
+        // Usa el servicio inyectado
+        servicioEnvio.enviar(emailDestino, "Su Ticket de Compra", "Detalles del ticket", pdfPath);
+        JOptionPane.showMessageDialog(this, "Ticket enviado a: " + emailDestino);
+    }
             } else {
                 JOptionPane.showMessageDialog(this, "Error al generar el ticket PDF.");
             }
