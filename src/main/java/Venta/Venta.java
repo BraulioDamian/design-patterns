@@ -1017,7 +1017,8 @@ Principal2_0.getInstance().actualizarTablaInventario();
     DefaultTableModel modelo = (DefaultTableModel) TablaCobro.getModel();
 
     for (int i = 0; i < modelo.getRowCount(); i++) {
-    Producto producto = new Producto.ProductoBuilder().build();        try {
+        Producto producto = new Producto();
+    try {
             // Asegúrate de que estos índices coincidan con cómo has configurado tu tabla
             int productoID = Integer.parseInt(modelo.getValueAt(i, 0).toString());  // ID del producto
             String codigo = modelo.getValueAt(i, 1).toString();                    // Código del producto

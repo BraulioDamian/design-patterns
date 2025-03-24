@@ -48,6 +48,28 @@ public class CONSULTASDAO {
 
 
 
+    public List<Area> obtenerAreas() throws SQLException {
+        List<Area> areas = new ArrayList<>();
+        String sql = "SELECT AreaID, Nombre FROM area";
+        try (PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Area area = new Area();
+                area.setAreaID(rs.getInt("AreaID"));
+                area.setNombreArea(rs.getString("Nombre"));
+                areas.add(area);
+                System.out.println("Área recuperada: ID=" + area.getAreaID() + ", Nombre=" + area.getNombreArea()); // Depuración
+            }
+            System.out.println("Total de áreas recuperadas: " + areas.size()); // Depuración
+
+        } catch (SQLException e) {
+            System.err.println("Error al obtener áreas: " + e.getMessage()); // Depuración
+            throw e; // Relanza la excepción para que se maneje en el llamador
+        }
+        return areas;
+    }
+
 
 
 
@@ -55,33 +77,34 @@ public class CONSULTASDAO {
         List<Producto> listaProductos = new ArrayList<>();
         String sql = "SELECT p.*, a.Nombre AS NombreArea FROM productos p " +
                 "INNER JOIN area a ON p.AreaID = a.AreaID " +
-                "WHERE p.Nombre LIKE ?";
+                "WHERE p.Nombre LIKE ?"; // Filtrar por nombre
 
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
-            pstmt.setString(1, "%" + texto + "%");
+            pstmt.setString(1, "%" + texto + "%"); // Configurar el parámetro del LIKE
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    Producto producto = new Producto.ProductoBuilder()
-                            .productoID(rs.getInt("ProductoID"))
-                            .nombre(rs.getString("Nombre"))
-                            .descripcion(rs.getString("Descripcion"))
-                            .areaID(rs.getInt("AreaID"))
-                            .precio(rs.getDouble("Precio"))
-                            .unidadesDisponibles(rs.getInt("UnidadesDisponibles"))
-                            .nivelReorden(rs.getInt("NivelReorden"))
-                            .fechaCaducidad(rs.getDate("FechaCaducidad") != null ? rs.getDate("FechaCaducidad").toLocalDate() : null)
-                            .codigoBarras(rs.getString("CodigoBarras"))
-                            .tamañoNeto(rs.getString("TamañoNeto"))
-                            .marca(rs.getString("Marca"))
-                            .contenido(rs.getString("Contenido"))
-                            .nombreArea(rs.getString("NombreArea"))
-                            .build();
+                    Producto producto = new Producto();  // Uso del constructor vacío
+                    producto.setProductoID(rs.getInt("ProductoID"));
+                    producto.setNombre(rs.getString("Nombre"));
+                    producto.setDescripcion(rs.getString("Descripcion"));
+                    producto.setAreaID(rs.getInt("AreaID"));
+                    producto.setPrecio(rs.getDouble("Precio"));
+                    producto.setUnidadesDisponibles(rs.getInt("UnidadesDisponibles"));
+                    producto.setNivelReorden(rs.getInt("NivelReorden"));
+                    producto.setFechaCaducidad(rs.getDate("FechaCaducidad") != null ? rs.getDate("FechaCaducidad").toLocalDate() : null);
+                    producto.setCodigoBarras(rs.getString("CodigoBarras"));
+                    producto.setTamañoNeto(rs.getString("TamañoNeto"));
+                    producto.setMarca(rs.getString("Marca"));
+                    producto.setContenido(rs.getString("Contenido"));
+                    producto.setNombreArea(rs.getString("NombreArea"));
+                    // No necesitas setear cantidad aquí si no es relevante
                     listaProductos.add(producto);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // O maneja la excepción como consideres adecuado
         }
+
         return listaProductos;
     }
 
@@ -97,26 +120,28 @@ public class CONSULTASDAO {
         try (PreparedStatement pstmt = con.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
-                Producto producto = new Producto.ProductoBuilder()
-                        .productoID(rs.getInt("ProductoID"))
-                        .nombre(rs.getString("Nombre"))
-                        .descripcion(rs.getString("Descripcion"))
-                        .areaID(rs.getInt("AreaID"))
-                        .precio(rs.getDouble("Precio"))
-                        .unidadesDisponibles(rs.getInt("UnidadesDisponibles"))
-                        .nivelReorden(rs.getInt("NivelReorden"))
-                        .fechaCaducidad(rs.getDate("FechaCaducidad") != null ? rs.getDate("FechaCaducidad").toLocalDate() : null)
-                        .codigoBarras(rs.getString("CodigoBarras"))
-                        .tamañoNeto(rs.getString("TamañoNeto"))
-                        .marca(rs.getString("Marca"))
-                        .contenido(rs.getString("Contenido"))
-                        .nombreArea(rs.getString("NombreArea"))
-                        .build();
+                Producto producto = new Producto(); // Uso del constructor vacío
+                producto.setProductoID(rs.getInt("ProductoID"));
+                producto.setNombre(rs.getString("Nombre"));
+                producto.setDescripcion(rs.getString("Descripcion"));
+                producto.setAreaID(rs.getInt("AreaID"));
+                producto.setPrecio(rs.getDouble("Precio"));
+                producto.setUnidadesDisponibles(rs.getInt("UnidadesDisponibles"));
+                producto.setNivelReorden(rs.getInt("NivelReorden"));
+                producto.setFechaCaducidad(rs.getDate("FechaCaducidad") != null ? rs.getDate("FechaCaducidad").toLocalDate() : null);
+                producto.setCodigoBarras(rs.getString("CodigoBarras"));
+                producto.setTamañoNeto(rs.getString("TamañoNeto"));
+                producto.setMarca(rs.getString("Marca"));
+                producto.setContenido(rs.getString("Contenido"));
+                producto.setNombreArea(rs.getString("NombreArea")); // Nombre del área directamente de la consulta SQL
                 listaProductos.add(producto);
+
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            e.printStackTrace(); // O maneja la excepción como consideres adecuado
         }
+
         return listaProductos;
     }
 
@@ -132,21 +157,20 @@ public class CONSULTASDAO {
             pstmt.setString(1, areaNombre);
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    Producto producto = new Producto.ProductoBuilder()
-                            .productoID(rs.getInt("ProductoID"))
-                            .nombre(rs.getString("Nombre"))
-                            .descripcion(rs.getString("Descripcion"))
-                            .areaID(rs.getInt("AreaID"))
-                            .precio(rs.getDouble("Precio"))
-                            .unidadesDisponibles(rs.getInt("UnidadesDisponibles"))
-                            .nivelReorden(rs.getInt("NivelReorden"))
-                            .fechaCaducidad(rs.getObject("FechaCaducidad") != null ? rs.getDate("FechaCaducidad").toLocalDate() : null)
-                            .codigoBarras(rs.getString("CodigoBarras"))
-                            .tamañoNeto(rs.getString("TamañoNeto"))
-                            .marca(rs.getString("Marca"))
-                            .contenido(rs.getString("Contenido"))
-                            .nombreArea(rs.getString("NombreArea"))
-                            .build();
+                    Producto producto = new Producto(); // Uso del constructor vacío
+                    producto.setProductoID(rs.getInt("ProductoID"));
+                    producto.setNombre(rs.getString("Nombre"));
+                    producto.setDescripcion(rs.getString("Descripcion"));
+                    producto.setAreaID(rs.getInt("AreaID"));
+                    producto.setPrecio(rs.getDouble("Precio"));
+                    producto.setUnidadesDisponibles(rs.getInt("UnidadesDisponibles"));
+                    producto.setNivelReorden(rs.getInt("NivelReorden"));
+                    producto.setFechaCaducidad(rs.getObject("FechaCaducidad") != null ? rs.getDate("FechaCaducidad").toLocalDate() : null);
+                    producto.setCodigoBarras(rs.getString("CodigoBarras"));
+                    producto.setTamañoNeto(rs.getString("TamañoNeto"));
+                    producto.setMarca(rs.getString("Marca"));
+                    producto.setContenido(rs.getString("Contenido"));
+                    producto.setNombreArea(rs.getString("NombreArea"));
                     listaProductos.add(producto);
                 }
             }
@@ -599,28 +623,6 @@ public class CONSULTASDAO {
         }
     }
 
-
-    public List<Area> obtenerAreas() throws SQLException {
-        List<Area> areas = new ArrayList<>();
-        String sql = "SELECT AreaID, Nombre FROM area";
-        try (PreparedStatement stmt = con.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                Area area = new Area();
-                area.setAreaID(rs.getInt("AreaID"));
-                area.setNombreArea(rs.getString("Nombre"));
-                areas.add(area);
-                System.out.println("Área recuperada: ID=" + area.getAreaID() + ", Nombre=" + area.getNombreArea()); // Depuración
-            }
-            System.out.println("Total de áreas recuperadas: " + areas.size()); // Depuración
-
-        } catch (SQLException e) {
-            System.err.println("Error al obtener áreas: " + e.getMessage()); // Depuración
-            throw e; // Relanza la excepción para que se maneje en el llamador
-        }
-        return areas;
-    }
     public boolean actualizarPorcentajeGanancia(int areaID, double nuevoPorcentaje) {
         String sql = "UPDATE area SET GananciaPorcentaje = ? WHERE AreaID = ?";
         try (PreparedStatement stmt = con.prepareStatement(sql)) {
@@ -746,12 +748,11 @@ public class CONSULTASDAO {
             stmt.setInt(1, ventaId);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                Producto producto = new Producto.ProductoBuilder()
-                        .productoID(rs.getInt("ProductoID"))
-                        .nombre(rs.getString("Nombre"))
-                        .precio(rs.getDouble("Precio"))
-                        .cantidad(rs.getInt("Cantidad"))
-                        .build();
+                Producto producto = new Producto();
+                producto.setProductoID(rs.getInt("ProductoID"));
+                producto.setNombre(rs.getString("Nombre"));
+                producto.setPrecio(rs.getDouble("Precio"));
+                producto.setCantidad(rs.getInt("Cantidad"));
                 productos.add(producto);
             }
         }
@@ -769,16 +770,17 @@ public class CONSULTASDAO {
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    producto = new Producto.ProductoBuilder()
-                            .productoID(rs.getInt("ProductoID"))
-                            .nombre(rs.getString("Nombre"))
-                            .contenido(rs.getString("Contenido"))
-                            .build();
+                    producto = new Producto(); // Uso del constructor vacío
+                    producto.setProductoID(rs.getInt("ProductoID"));
+                    producto.setNombre(rs.getString("Nombre"));
+                    producto.setContenido(rs.getString("Contenido"));
                 }
             }
         }
-        return producto;
+
+        return producto; // Devuelve el producto encontrado o null si no se encontró
     }
+
 
 
     //Conultas para las graficas

@@ -1,12 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DBObjetos;
 
-import java.time.LocalDate;
+/**
+ *
+ * @author braul
+ */
+import Composite.ComponenteInventario;
 
-public class Producto {
+import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
+
+public class Producto implements ComponenteInventario {
     private int productoID;
     private String nombre;
     private String descripcion;
@@ -19,64 +23,182 @@ public class Producto {
     private String tamañoNeto;
     private String marca;
     private String contenido;
-    private String nombreArea;
-    private int cantidad;
+    private String nombreArea; // Nuevo campo para el nombre del área
+    private int cantidad;  // Campo adicional para la cantidad
 
-    // Constructor privado para usar con el Builder
-    private Producto(ProductoBuilder builder) {
-        this.productoID = builder.productoID;
-        this.nombre = builder.nombre;
-        this.descripcion = builder.descripcion;
-        this.areaID = builder.areaID;
-        this.precio = builder.precio;
-        this.unidadesDisponibles = builder.unidadesDisponibles;
-        this.nivelReorden = builder.nivelReorden;
-        this.fechaCaducidad = builder.fechaCaducidad;
-        this.codigoBarras = builder.codigoBarras;
-        this.tamañoNeto = builder.tamañoNeto;
-        this.marca = builder.marca;
-        this.contenido = builder.contenido;
-        this.nombreArea = builder.nombreArea;
-        this.cantidad = builder.cantidad;
+    // Constructor
+    public Producto(int productoID, String nombre, String descripcion, int areaID, double precio, int unidadesDisponibles, int nivelReorden, LocalDate fechaCaducidad, String codigoBarras, String tamañoNeto, String marca, String contenido, String nombreArea,int cantidad) {
+        this.productoID = productoID;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.areaID = areaID;
+        this.precio = precio;
+        this.unidadesDisponibles = unidadesDisponibles;
+        this.nivelReorden = nivelReorden;
+        this.fechaCaducidad = fechaCaducidad;
+        this.codigoBarras = codigoBarras;
+        this.tamañoNeto = tamañoNeto;
+        this.marca = marca;
+        this.contenido = contenido;
+        this.nombreArea = nombreArea; // Inicializar el nombre del área
+        this.cantidad = cantidad;  // Inicializa la cantidad
+
     }
 
-    // Constructor vacío privado para el Builder
-    private Producto() {
+    public Producto(){
     }
 
     // Getters
-    public int getProductoID() { return productoID; }
-    public String getNombre() { return nombre; }
-    public String getDescripcion() { return descripcion; }
-    public int getAreaID() { return areaID; }
-    public double getPrecio() { return precio; }
-    public int getUnidadesDisponibles() { return unidadesDisponibles; }
-    public int getNivelReorden() { return nivelReorden; }
-    public LocalDate getFechaCaducidad() { return fechaCaducidad; }
-    public String getCodigoBarras() { return codigoBarras; }
-    public String getTamañoNeto() { return tamañoNeto; }
-    public String getMarca() { return marca; }
-    public String getContenido() { return contenido; }
-    public String getNombreArea() { return nombreArea; }
-    public int getCantidad() { return cantidad; }
 
-    // Setters 
-    public void setProductoID(int productoID) { this.productoID = productoID; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
-    public void setAreaID(int areaID) { this.areaID = areaID; }
-    public void setPrecio(double precio) { this.precio = precio; }
-    public void setUnidadesDisponibles(int unidadesDisponibles) { this.unidadesDisponibles = unidadesDisponibles; }
-    public void setNivelReorden(int nivelReorden) { this.nivelReorden = nivelReorden; }
-    public void setFechaCaducidad(LocalDate fechaCaducidad) { this.fechaCaducidad = fechaCaducidad; }
-    public void setCodigoBarras(String codigoBarras) { this.codigoBarras = codigoBarras; }
-    public void setTamañoNeto(String tamañoNeto) { this.tamañoNeto = tamañoNeto; }
-    public void setMarca(String marca) { this.marca = marca; }
-    public void setContenido(String contenido) { this.contenido = contenido; }
-    public void setNombreArea(String nombreArea) { this.nombreArea = nombreArea; }
-    public void setCantidad(int cantidad) { this.cantidad = cantidad; }
+    public String getNombreArea() {
+        return nombreArea;
+    }
 
-    // toString (igual que antes)
+    // Setter para nombreArea
+    public void setNombreArea(String nombreArea) {
+        this.nombreArea = nombreArea;
+    }
+
+    public int getProductoID() {
+        return productoID;
+    }
+
+/*    public String getNombre() {
+        return nombre;
+    }*/
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public int getAreaID() {
+        return areaID;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public int getUnidadesDisponibles() {
+        return unidadesDisponibles;
+    }
+
+    public int getNivelReorden() {
+        return nivelReorden;
+    }
+
+    public LocalDate getFechaCaducidad() {
+        return fechaCaducidad;
+    }
+
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public String getTamañoNeto() {
+        return tamañoNeto;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    // Setters
+    public void setProductoID(int productoID) {
+        this.productoID = productoID;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public void setAreaID(int areaID) {
+        this.areaID = areaID;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public void setUnidadesDisponibles(int unidadesDisponibles) {
+        this.unidadesDisponibles = unidadesDisponibles;
+    }
+
+    public void setNivelReorden(int nivelReorden) {
+        this.nivelReorden = nivelReorden;
+    }
+
+    public void setFechaCaducidad(LocalDate fechaCaducidad) {
+        this.fechaCaducidad = fechaCaducidad;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
+    }
+
+    public void setTamañoNeto(String tamañoNeto) {
+        this.tamañoNeto = tamañoNeto;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+
+    @Override
+    public double getPrecioTotal() {
+        return precio * unidadesDisponibles;
+    }
+
+    @Override
+    public void aplicarDescuento(double porcentaje) {
+        this.precio *= (1 - porcentaje / 100);
+    }
+
+    // Métodos no aplicables para hojas
+    @Override
+    public void agregar(ComponenteInventario componente) {
+        throw new UnsupportedOperationException("No se puede agregar a un producto individual");
+    }
+
+    @Override
+    public void eliminar(ComponenteInventario componente) {
+        throw new UnsupportedOperationException("No se puede eliminar de un producto individual");
+    }
+
+    @Override
+    public List<ComponenteInventario> getHijos() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public String getNombre() {
+        return nombre;
+    }
+
+
+    // toString
     @Override
     public String toString() {
         return "Producto{" +
@@ -97,42 +219,9 @@ public class Producto {
                 '}';
     }
 
-    // Clase Builder
-    public static class ProductoBuilder {
-        private int productoID;
-        private String nombre;
-        private String descripcion;
-        private int areaID;
-        private double precio;
-        private int unidadesDisponibles;
-        private int nivelReorden;
-        private LocalDate fechaCaducidad;
-        private String codigoBarras;
-        private String tamañoNeto;
-        private String marca;
-        private String contenido;
-        private String nombreArea;
-        private int cantidad;
 
-        public ProductoBuilder productoID(int productoID) { this.productoID = productoID; return this; }
-        public ProductoBuilder nombre(String nombre) { this.nombre = nombre; return this; }
-        public ProductoBuilder descripcion(String descripcion) { this.descripcion = descripcion; return this; }
-        public ProductoBuilder areaID(int areaID) { this.areaID = areaID; return this; }
-        public ProductoBuilder precio(double precio) { this.precio = precio; return this; }
-        public ProductoBuilder unidadesDisponibles(int unidadesDisponibles) { this.unidadesDisponibles = unidadesDisponibles; return this; }
-        public ProductoBuilder nivelReorden(int nivelReorden) { this.nivelReorden = nivelReorden; return this; }
-        public ProductoBuilder fechaCaducidad(LocalDate fechaCaducidad) { this.fechaCaducidad = fechaCaducidad; return this; }
-        public ProductoBuilder codigoBarras(String codigoBarras) { this.codigoBarras = codigoBarras; return this; }
-        public ProductoBuilder tamañoNeto(String tamañoNeto) { this.tamañoNeto = tamañoNeto; return this; }
-        public ProductoBuilder marca(String marca) { this.marca = marca; return this; }
-        public ProductoBuilder contenido(String contenido) { this.contenido = contenido; return this; }
-        public ProductoBuilder nombreArea(String nombreArea) { this.nombreArea = nombreArea; return this; }
-        public ProductoBuilder cantidad(int cantidad) { this.cantidad = cantidad; return this; }
 
-        public Producto build() {
-            return new Producto(this);
-        }
-    }
-    
-    
+
+
+
 }

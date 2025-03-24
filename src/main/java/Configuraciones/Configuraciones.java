@@ -68,6 +68,8 @@ public class Configuraciones extends javax.swing.JFrame {
 
 
 
+
+
     // Se agregó este método para obtener la instancia única de Configuraciones
     public static Configuraciones getInstance() {
         if (instance == null) {
@@ -447,6 +449,7 @@ public class Configuraciones extends javax.swing.JFrame {
         Inventario2.setBounds(0, 260, 170, 50);
 
         getContentPane().add(MenuPlegable2, new org.netbeans.lib.awtextra.AbsoluteConstraints(-120, 0, 170, 610));
+
 
         pack();
     }// </editor-fold>
