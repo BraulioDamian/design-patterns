@@ -4,7 +4,7 @@ Se implementó el patrón de diseño Factory en la clase Venta para centralizar 
   1.1 Creación de la Interfaz Producto.
     Se creó una nueva interfaz llamada Producto en el paquete DBObjetos. Esta interfaz define los métodos que deben implementar todas las clases que representen un producto.
     Código de la Interfaz Producto:
-   
+   ```Java
      package DBObjetos;
        public interface Producto2 {
          int getProductoID();
@@ -13,6 +13,7 @@ Se implementó el patrón de diseño Factory en la clase Venta para centralizar 
          int getCantidad();
          void setCantidad(int cantidad);
        }
+   ```
 
    Explicación:
     - La interfaz Producto define los métodos que deben implementar todas las clases que representen un producto.
@@ -22,6 +23,7 @@ Se implementó el patrón de diseño Factory en la clase Venta para centralizar 
     La clase Producto ya existente se modificó para implementar la interfaz Producto. Esto significa que la clase Producto debe proporcionar implementaciones para todos los métodos definidos en la interfaz.
     Código de la Clase Producto:
 
+```Java
       package DBObjetos;
 
       public class Producto implements Producto2 {
@@ -71,6 +73,7 @@ Se implementó el patrón de diseño Factory en la clase Venta para centralizar 
           this.cantidad = cantidad;
       }
     }
+```
 
   Explicación:
     - La clase Producto ahora implementa la interfaz Producto, lo que significa que debe proporcionar implementaciones para los métodos getProductoID, getNombre, getPrecio, getCantidad y setCantidad.
@@ -80,6 +83,7 @@ Se implementó el patrón de diseño Factory en la clase Venta para centralizar 
     La interfaz Producto se utiliza en la clase ProductoFactory para devolver objetos que implementen esta interfaz. Esto permite que la Factory sea más flexible, ya que puede devolver cualquier tipo de producto       que implemente la interfaz.
     Código de ProductoFactory:
 
+```Java
       package Venta;
 
       import DBObjetos.Producto;
@@ -89,16 +93,17 @@ Se implementó el patrón de diseño Factory en la clase Venta para centralizar 
           return new Producto(productoID, codigoBarras, nombre, precio, cantidad);
         }
       }
+```
 
   Explicación:
     - El método crearProducto devuelve un objeto de tipo Producto (la interfaz), pero en realidad está creando una instancia de la clase Producto.
     - Esto permite que en el futuro puedas crear otros tipos de productos (por ejemplo, ProductoDigital, ProductoFisico) que implementen la interfaz Producto, sin necesidad de modificar la Factory.
 
-2. Ejemplo de uso
+Ejemplo de uso
   Creación de un Producto
     Cuando el usuario selecciona un producto en la interfaz gráfica, se llama al método agregarProductoACobroYCerrarTabla. Este método usa la ProductoFactory para crear un nuevo objeto Producto (que implementa       la interfaz Producto) y agregarlo a la tabla de cobro.
   Flujo:
-1. El usuario selecciona un producto.
-2. El método agregarProductoACobroYCerrarTabla obtiene los detalles del producto seleccionado.
-3. Usa la ProductoFactory para crear un objeto Producto (que implementa la interfaz Producto).
-4. Agrega el producto a la tabla de cobro.
+    1. El usuario selecciona un producto.
+    2. El método agregarProductoACobroYCerrarTabla obtiene los detalles del producto seleccionado.
+    3. Usa la ProductoFactory para crear un objeto Producto (que implementa la interfaz Producto).
+    4. Agrega el producto a la tabla de cobro.
