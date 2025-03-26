@@ -149,12 +149,4 @@ oracleBridge.guardarProducto(producto);
 - Implementar transacciones más robustas
 - Añadir validaciones adicionales
 
-## 📝 Contribuciones
-¡Las contribuciones son bienvenidas! Por favor, abre un issue o realiza un pull request.
 
-## 📄 Licencia
-[Especifica tu licencia aquí]
-
----
-
-¡Gracias por explorar este ejemplo del Patrón Bridge! 🎉
