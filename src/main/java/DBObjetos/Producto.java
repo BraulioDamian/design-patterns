@@ -1,12 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DBObjetos;
 
 import java.time.LocalDate;
 
-public class Producto {
+public class Producto implements Cloneable {
     private int productoID;
     private String nombre;
     private String descripcion;
@@ -40,8 +36,20 @@ public class Producto {
         this.cantidad = builder.cantidad;
     }
 
-    // Constructor vacío privado para el Builder
-    private Producto() {
+    @Override
+    public Producto clone() {
+        try {
+            return (Producto) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(); // No debería ocurrir
+        }
+    }
+    
+   
+    public Producto crearProductoNoEditable() {
+        Producto noEditable = this.clone();
+        // Configurar noEditable para que no se pueda modificar...
+        return noEditable;
     }
 
     // Getters

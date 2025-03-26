@@ -48,7 +48,65 @@ public class CONSULTASDAO {
 
 
 
+ public boolean insertarProducto(Producto producto) {
+        // Crear el producto editable
+        Producto editable = producto.clone();
+        Producto Noeditable = producto.crearProductoNoEditable();
+        
+        // Insertar el mismo producto editable dos veces en la base de datos
+        boolean editableInsertado1 = insertarProductoEnBD(editable);
+        boolean editableInsertado2 = insertarProductoEnBD2(Noeditable);
 
+        return editableInsertado1 && editableInsertado2;
+    }
+
+private boolean insertarProductoEnBD(Producto producto) {
+        String sql = "INSERT INTO productos (Nombre, Descripcion, AreaID, Precio, UnidadesDisponibles, NivelReorden, FechaCaducidad, CodigoBarras, TamañoNeto, Marca) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setString(2, producto.getDescripcion());
+            stmt.setInt(3, producto.getAreaID());
+            stmt.setDouble(4, producto.getPrecio());
+            stmt.setInt(5, producto.getUnidadesDisponibles());
+            stmt.setInt(6, producto.getNivelReorden());
+            stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad()));  // Asegúrate de convertir LocalDate a sql.Date
+            stmt.setString(8, producto.getCodigoBarras());
+            stmt.setString(9, producto.getTamañoNeto());
+            stmt.setString(10, producto.getMarca());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al insertar producto en la base de datos", e);
+            return false;
+        }
+        
+    }
+
+private boolean insertarProductoEnBD2(Producto producto) {
+        
+        String sql= "INSERT INTO productos (Nombre, Descripcion, AreaID, Precio, UnidadesDisponibles, NivelReorden, FechaCaducidad, CodigoBarras, TamañoNeto, Marca) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setString(1, producto.getNombre());
+            stmt.setString(2, producto.getDescripcion());
+            stmt.setInt(3, producto.getAreaID());
+            stmt.setDouble(4, producto.getPrecio());
+            stmt.setInt(5, producto.getUnidadesDisponibles());
+            stmt.setInt(6, producto.getNivelReorden());
+            stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad()));  // Asegúrate de convertir LocalDate a sql.Date
+            stmt.setString(8, producto.getCodigoBarras());
+            stmt.setString(9, producto.getTamañoNeto());
+            stmt.setString(10, producto.getMarca());
+
+            int affectedRows = stmt.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error al insertar producto en la base de datos", e);
+            return false;
+        }
+        
+    }
 
 
     public List<Producto> obtenerProductosConNombre(String texto) {
@@ -172,27 +230,7 @@ public class CONSULTASDAO {
 
 
     // Método para insertar un nuevo producto
-    public boolean insertarProducto(Producto producto) {
-        String sql = "INSERT INTO productos (Nombre, Descripcion, AreaID, Precio, UnidadesDisponibles, NivelReorden, FechaCaducidad, CodigoBarras, TamañoNeto, Marca) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, producto.getNombre());
-            stmt.setString(2, producto.getDescripcion());
-            stmt.setInt(3, producto.getAreaID());
-            stmt.setDouble(4, producto.getPrecio());
-            stmt.setInt(5, producto.getUnidadesDisponibles());
-            stmt.setInt(6, producto.getNivelReorden());
-            stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad()));  // Asegúrate de convertir LocalDate a sql.Date
-            stmt.setString(8, producto.getCodigoBarras());
-            stmt.setString(9, producto.getTamañoNeto());
-            stmt.setString(10, producto.getMarca());
-
-            int affectedRows = stmt.executeUpdate();
-            return affectedRows > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error al insertar el producto", e);
-            return false;
-        }
-    }
+    
 
     //loggin metodos
 
@@ -1081,6 +1119,32 @@ public class CONSULTASDAO {
             ventasEmpleado.forEach((nombre, total) -> {
                 System.out.println("Empleado: " + nombre + ", Total Ventas: " + total);
             });
+
+            // Crear un nuevo producto usando el constructor del builder
+            Producto nuevoProducto = new Producto.ProductoBuilder()
+                .nombre("Nuevo Producto")
+                .descripcion("Descripción del producto")
+                .areaID(1)
+                .precio(100.0)
+                .unidadesDisponibles(50)
+                .nivelReorden(10)
+                .fechaCaducidad(LocalDate.of(2025, 12, 31))
+                .codigoBarras("1234567890123")
+                .tamañoNeto("1kg")
+                .marca("Marca")
+                .contenido("Contenido")
+                .nombreArea("Área")
+                .cantidad(1)
+                .build();
+
+            // Insertar el producto en la base de datos
+            boolean productoInsertado = dao.insertarProducto(nuevoProducto);
+            if (productoInsertado) {
+                System.out.println("Productos insertados correctamente.");
+            } else {
+                System.out.println("Error al insertar los productos.");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
