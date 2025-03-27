@@ -134,11 +134,16 @@ Para acceder al historial:
 3. Hacer doble clic en una transacción para ver sus detalles
 4. Si es necesario, usar el botón "Restaurar Estado" para recrear una transacción
 
+## UML Memento
+![Diagrama UML del Patrón Facade](./src/main/java/VentaMemento/Memento.png)
+
+
 ## Conclusión
 
 La implementación del patrón Memento en el sistema de cobro proporciona una mejora significativa en la experiencia del usuario y en la robustez de la aplicación. Esta nueva arquitectura no solo soluciona las limitaciones de la versión original, sino que establece una base sólida para futuras mejoras y extensiones del sistema.
 
 El código ha sido diseñado siguiendo principios SOLID, lo que garantiza su mantenibilidad y extensibilidad a largo plazo. La clara separación de responsabilidades facilita la comprensión del código y permite a otros desarrolladores trabajar en el proyecto sin dificultad.
+
 
 
 # Implementación del Patrón Facade
@@ -403,6 +408,7 @@ private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {
 }
 
 ```
-## Conclusión
+### UML Facade
 
-La implementación del patrón Facade en este sistema de cobro no altera el funcionamiento esencial del programa: los usuarios siguen procesando pagos, generando tickets y enviándolos por correo de la misma manera. Sin embargo, la introducción de `PagoFacade` aporta beneficios significativos, como una mejor encapsulación de la lógica, un menor acoplamiento entre componentes y una mayor modularidad. Esto resulta en un código más limpio, fácil de mantener y reutilizable, lo que facilita futuras expansiones o modificaciones sin comprometer la estabilidad del sistema. En resumen, el patrón Facade mejora la estructura del proyecto sin sacrificar su funcionalidad original, alineándose con los principios de diseño de software robusto y escalable.
+
+![Diagrama UML del Patrón Facade](./src/main/java/CobroFacade/Facade.png)
