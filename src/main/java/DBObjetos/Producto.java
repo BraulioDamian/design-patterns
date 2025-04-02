@@ -40,7 +40,7 @@ public class Producto {
         this.cantidad = builder.cantidad;
     }
 
-    // Constructor vacío privado para el Builder
+    // Constructor vacío privado
     private Producto() {
     }
 
@@ -76,7 +76,7 @@ public class Producto {
     public void setNombreArea(String nombreArea) { this.nombreArea = nombreArea; }
     public void setCantidad(int cantidad) { this.cantidad = cantidad; }
 
-    // toString (igual que antes)
+    // toString 
     @Override
     public String toString() {
         return "Producto{" +
