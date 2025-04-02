@@ -22,7 +22,7 @@ public class Producto {
     private String nombreArea;
     private int cantidad;
 
-    // Constructor privado para usar con el Builder
+    // Constructor privado
     private Producto(ProductoBuilder builder) {
         this.productoID = builder.productoID;
         this.nombre = builder.nombre;
