@@ -13,6 +13,8 @@
 2. **Código Más Limpio**: Métodos como `.precio(20.5)` son autoexplicativos.
 3. **Validaciones Centralizadas**: Reglas de negocio en un solo lugar (`build()`).
 
+## UML
+![Editor _ Mermaid Chart-2025-04-03-020531](https://github.com/user-attachments/assets/0f2cd7a1-3119-4acd-ba2c-5aaf099eadaf)
 ## Ejemplo de Uso en el Proyecto
 ```java
 // Crear un producto con Builder
@@ -29,4 +31,4 @@ Usuario usuario = Usuario.builder()
     .rol(Usuario.Rol.GERENTE)
     .build();
 
-![Editor _ Mermaid Chart-2025-04-03-020531](https://github.com/user-attachments/assets/0f2cd7a1-3119-4acd-ba2c-5aaf099eadaf)
+
