@@ -3,7 +3,6 @@
 ## Participantes
 - **Builder**: `ProductoBuilder`, `UsuarioBuilder`.
 - **Productos Construidos**: `Producto`, `Usuario`.
-- **Responsable**: [Tu nombre].
 
 ## Finalidad
 - Simplificar la creación de objetos complejos con múltiples atributos.
@@ -29,3 +28,5 @@ Usuario usuario = Usuario.builder()
     .email("braulio@tienda.com")
     .rol(Usuario.Rol.GERENTE)
     .build();
+
+![Editor _ Mermaid Chart-2025-04-03-020531](https://github.com/user-attachments/assets/0f2cd7a1-3119-4acd-ba2c-5aaf099eadaf)
