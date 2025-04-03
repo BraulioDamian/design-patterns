@@ -14,7 +14,8 @@
 3. **Validaciones Centralizadas**: Reglas de negocio en un solo lugar (`build()`).
 
 ## UML
-![Editor _ Mermaid Chart-2025-04-03-020531](https://github.com/user-attachments/assets/0f2cd7a1-3119-4acd-ba2c-5aaf099eadaf)
+![Editor _ Mermaid Chart-2025-04-03-020709](https://github.com/user-attachments/assets/b64951eb-5300-4e92-a2dd-d40d7b236f0a)
+
 ## Ejemplo de Uso en el Proyecto
 ```java
 // Crear un producto con Builder
@@ -22,7 +23,8 @@ Producto producto = Producto.builder()
     .nombre("Arroz")
     .precio(18.5)
     .marca("Sello Rojo")
-    .build();
+    .build();![Uploading Editor _ Mermaid Chart-2025-04-03-020709.svg…]()
+
 
 // Crear un usuario administrador
 Usuario usuario = Usuario.builder()
