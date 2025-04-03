@@ -14,7 +14,8 @@
 3. **Validaciones Centralizadas**: Reglas de negocio en un solo lugar (`build()`).
 
 ## UML
-![Editor _ Mermaid Chart-2025-04-03-020709](https://github.com/user-attachments/assets/b64951eb-5300-4e92-a2dd-d40d7b236f0a)
+![Editor _ Mermaid Chart-2025-04-03-020625](https://github.com/user-attachments/assets/83972e1d-460c-435c-b946-904c2a4c9526)
+
 
 ## Ejemplo de Uso en el Proyecto
 ```java
