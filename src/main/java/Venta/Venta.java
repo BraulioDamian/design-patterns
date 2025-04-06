@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import login.MandarCorreosAdapter;
 import login.SesionManager;
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -962,17 +963,23 @@ private void agregarProductoACobroYCerrarTabla() {
         // Creación de la instancia DAO y ejecución de la venta
         CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
         if (dao.completarVenta(usuarioActual.getUsuarioID(), productosSeleccionados)) {
-            int ventaId = dao.getUltimaVentaIdPorUsuario(usuarioActual.getUsuarioID()); // Método para obtener el último ID de venta por usuario
-            List<Producto> detallesVenta = dao.obtenerDetallesVenta(ventaId); // Método para obtener los detalles de la venta
+        int ventaId = dao.getUltimaVentaIdPorUsuario(usuarioActual.getUsuarioID());
+        List<Producto> detallesVenta = dao.obtenerDetallesVenta(ventaId);
+        double totalVenta = returnTotal();
 
-            double totalVenta = returnTotal(); // Asegúrate de que este método calcula el total correcto
-            Cobro ventanaCobro = new Cobro(totalVenta, productosSeleccionados);
-            ventanaCobro.setVentaListener(() -> {
-                // Limpiar la tabla cuando se completa la venta
-                ((DefaultTableModel) TablaCobro.getModel()).setRowCount(0);
-                // Aquí también podrías actualizar otros componentes si es necesario
-            });
-            ventanaCobro.setVisible(true);
+        // Crear instancia del servicio de envío
+        ServicioEnvio servicioEnvio = new MandarCorreosAdapter();
+        ServicioEnvio servicio = new WhatsAppAdapter();
+        //MODIFICARACA
+        // Modificar la creación de Cobro
+       // Cobro ventanaCobro = new Cobro(totalVenta, productosSeleccionados, servicioEnvio);
+       // En Venta.java (al generar la ventana Cobro):
+        Cobro ventanaCobro = new Cobro(totalVenta, productosSeleccionados); // Elimina el tercer parámetro
+        
+        ventanaCobro.setVentaListener(() -> {
+            ((DefaultTableModel) TablaCobro.getModel()).setRowCount(0);
+        });
+        ventanaCobro.setVisible(true);
         } else {
             JOptionPane.showMessageDialog(this, "Error al completar la venta.");
         }

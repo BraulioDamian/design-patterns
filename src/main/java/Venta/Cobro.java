@@ -27,6 +27,8 @@ import javax.swing.event.DocumentListener;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import login.SesionManager;
+// Añade al inicio del archivo:
+import Venta.notificaciones.NotificacionChain;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -48,6 +50,8 @@ public class Cobro extends JFrame {
     String precioEnLetras;
     List<Producto> productos;  // Lista de productos para generar el ticket
     private VentaListener ventaListener;
+     private ServicioEnvio servicioEnvio; // Campo para el servicio de envío
+
     
     public interface VentaListener {
         void onVentaCompleta();
@@ -83,7 +87,7 @@ public class Cobro extends JFrame {
 
   
     
-    public Cobro(double total, List<Producto> productos) {
+    public Cobro(double total, List<Producto> productos, ServicioEnvio servicioEnvio) {
         initComponents();
         setLocationRelativeTo(null); // Centra la ventana en la pantalla
 
@@ -102,6 +106,18 @@ public class Cobro extends JFrame {
                 Venta.getInstance().setVisible(true); // Vuelve a hacer visible la ventana de venta
             }
         });
+        this.servicioEnvio = servicioEnvio;
+    }
+    public Cobro(double total, List<Producto> productos) { // Elimina el parámetro ServicioEnvio
+        initComponents();
+        setLocationRelativeTo(null);
+        this.productos = productos;
+        this.pre = total;
+        precio.setText("$" + String.format("%.2f", total));
+        precioEnLetras = converter.convertir(total);
+        letras.setText(precioEnLetras);
+        agregarListeners();
+        
     }
 
     
@@ -339,17 +355,18 @@ public class Cobro extends JFrame {
 
             // Genera el ticket y obtiene la ruta del PDF generado.
             String pdfPath = generarPDF(productos, pre, pago, cambio);
-            if (pdfPath != null) {
-                // Verifica si se ha ingresado un correo electrónico.
-                String emailDestino = txtCorreo.getText();
-                if (emailDestino.isEmpty()) {
-                    int opcion = JOptionPane.showConfirmDialog(this, "No ha ingresado un correo electrónico. ¿Desea continuar sin enviar el ticket por correo?", "Correo no ingresado", JOptionPane.YES_NO_OPTION);
-                    if (opcion == JOptionPane.NO_OPTION) {
-                        return; // Si el usuario selecciona NO, no se procede.
-                    }
-                } else {
-                    EnvioTicket.enviarConArchivo(emailDestino, pdfPath);  // Enviar el PDF por correo
-                    JOptionPane.showMessageDialog(this, "El ticket ha sido enviado correctamente a: " + emailDestino);
+    if (pdfPath != null) {
+        String emailDestino = txtCorreo.getText();
+        if (!emailDestino.isEmpty()) {
+            // Usar la cadena de notificaciones
+            NotificacionChain notificacionChain = new NotificacionChain();
+            notificacionChain.enviarNotificacion(
+                emailDestino, 
+                "Su Ticket de Compra", 
+                "Detalles del ticket adjunto", 
+                pdfPath
+            );
+                    JOptionPane.showMessageDialog(this, "Notificaciones enviadas.");
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "Error al generar el ticket PDF.");

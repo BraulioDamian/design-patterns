@@ -13,6 +13,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix  # Solo para Linux
       - ./logs:/app/logs
+      - ./src/main/resources:/app/resources  # Mapea recursos directamente
     depends_on:
       db:
         condition: service_healthy

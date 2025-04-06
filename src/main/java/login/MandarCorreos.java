@@ -24,6 +24,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+
 public class MandarCorreos {
     private static final String emailFrom = "brauliodamian80@gmail.com";
     private static final String passwordFrom = "xkpy qgkw zqpg akmr";

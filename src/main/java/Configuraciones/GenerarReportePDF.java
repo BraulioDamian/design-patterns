@@ -57,6 +57,83 @@ public class GenerarReportePDF {
 
         document.close();
     }
+    // Nuevo método que devuelve el contenido como String
+    public String generarReporteComoTexto(Date fechaInicio, Date fechaFin) throws SQLException {
+        StringBuilder contenido = new StringBuilder();
+        
+        // Añadir título principal
+        contenido.append("REPORTE DE VENTAS\n\n");
+        
+        // Obtener los datos de los empleados y sus ventas
+        CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
+        List<Usuario> usuarios = dao.obtenerTodosLosUsuarios();
+        
+        // Añadir información de ventas por producto, empleado y productos menos vendidos
+        agregarResumenVentas(contenido, dao, fechaInicio, fechaFin);
+        
+        // Para cada empleado, añadir su reporte
+        for (Usuario usuario : usuarios) {
+            agregarResumenEmpleado(contenido, dao, usuario, fechaInicio, fechaFin);
+        }
+        
+        return contenido.toString();
+    }
+    private void agregarResumenVentas(StringBuilder contenido, CONSULTASDAO dao, Date fechaInicio, Date fechaFin) throws SQLException {
+        // Resumir ventas por producto
+        contenido.append("VENTAS POR PRODUCTO:\n");
+        Map<String, Integer> ventasPorProducto = dao.obtenerVentasPorProducto(new java.sql.Date(fechaInicio.getTime()), 
+                                                                            new java.sql.Date(fechaFin.getTime()));
+        for (Map.Entry<String, Integer> entry : ventasPorProducto.entrySet()) {
+            contenido.append("- ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        contenido.append("\n");
+        
+        // Resumir ventas por empleado
+        contenido.append("VENTAS POR EMPLEADO:\n");
+        Map<String, Integer> ventasPorEmpleado = dao.obtenerVentasPorEmpleado(new java.sql.Date(fechaInicio.getTime()), 
+                                                                            new java.sql.Date(fechaFin.getTime()));
+        for (Map.Entry<String, Integer> entry : ventasPorEmpleado.entrySet()) {
+            contenido.append("- ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        contenido.append("\n");
+        
+        // Resumir productos menos vendidos
+        contenido.append("PRODUCTOS MENOS VENDIDOS:\n");
+        Map<String, Integer> productosMenosVendidos = dao.obtenerProductosMenosVendidos(new java.sql.Date(fechaInicio.getTime()), 
+                                                                                     new java.sql.Date(fechaFin.getTime()));
+        for (Map.Entry<String, Integer> entry : productosMenosVendidos.entrySet()) {
+            contenido.append("- ").append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        contenido.append("\n");
+    }
+    
+    private void agregarResumenEmpleado(StringBuilder contenido, CONSULTASDAO dao, Usuario usuario, Date fechaInicio, Date fechaFin) throws SQLException {
+        contenido.append("EMPLEADO: ").append(usuario.getNombreUsuario()).append("\n");
+        contenido.append("Cargo: ").append(usuario.getRol()).append("\n\n");
+        
+        // Ventas
+        Map<String, Integer> ventasDiarias = dao.obtenerVentasDiariasPorEmpleado(new java.sql.Date(fechaInicio.getTime()));
+        Map<String, Integer> ventasSemanales = dao.obtenerVentasSemanalesPorEmpleado(new java.sql.Date(fechaInicio.getTime()), 
+                                                                                   new java.sql.Date(fechaFin.getTime()));
+        Map<String, Integer> ventasMensuales = dao.obtenerVentasMensualesPorEmpleado(new java.sql.Date(fechaInicio.getTime()), 
+                                                                                   new java.sql.Date(fechaFin.getTime()));
+        
+        contenido.append("VENTAS:\n");
+        contenido.append("- Diarias: ").append(ventasDiarias.getOrDefault(usuario.getNombreUsuario(), 0)).append("\n");
+        contenido.append("- Semanales: ").append(ventasSemanales.getOrDefault(usuario.getNombreUsuario(), 0)).append("\n");
+        contenido.append("- Mensuales: ").append(ventasMensuales.getOrDefault(usuario.getNombreUsuario(), 0)).append("\n");
+        
+        int totalVentas = ventasDiarias.getOrDefault(usuario.getNombreUsuario(), 0) +
+                          ventasSemanales.getOrDefault(usuario.getNombreUsuario(), 0) +
+                          ventasMensuales.getOrDefault(usuario.getNombreUsuario(), 0);
+        
+        contenido.append("- Total: ").append(totalVentas).append("\n\n");
+        
+        // Similar para productos vendidos y desempeño
+        // ...
+        
+        contenido.append("\n");
+    }
 
     private void agregarGraficasYDescripciones(Document document, Date fechaInicio, Date fechaFin) throws IOException, DocumentException, SQLException {
         ChartGenerator chartGenerator = new ChartGenerator();
