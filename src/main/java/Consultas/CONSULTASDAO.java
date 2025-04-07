@@ -651,40 +651,30 @@ public class CONSULTASDAO {
     public boolean crearProd(String nombre, int areaID, double precio, int unidades, String fecha, int codB, String marca,
                              String cont) {
 
-        // Utilizamos el Abstract Factory para crear el producto
-        // Decidimos si es perecedero o no basado en si tiene fecha de caducidad
         String tipoProducto = (fecha != null && !fecha.isEmpty()) ? "perecedero" : "noPerecedero";
-        
-        // Obtener la fábrica adecuada según el tipo de producto
         Factory.ProductoFactory factory = Factory.ProductoFactory.getFactory(tipoProducto);
         
-        // Crear un producto utilizando la fábrica
         DBObjetos.Producto producto;
         
         if (tipoProducto.equals("perecedero")) {
-            // Convertir la fecha de String a LocalDate
             java.time.LocalDate fechaCaducidad;
             try {
                 fechaCaducidad = java.time.LocalDate.parse(fecha);
             } catch (Exception e) {
-                // Si hay error de formato, usar la fecha actual + 30 días
                 fechaCaducidad = java.time.LocalDate.now().plusDays(30);
             }
             
-            // Crear producto perecedero con fecha de caducidad
             producto = ((ProductoPerecederoFactory)factory).crearProducto(
                 nombre, areaID, precio, unidades, fechaCaducidad,
                 String.valueOf(codB), marca, cont
             );
         } else {
-            // Crear producto no perecedero
             producto = ((ProductoNoPerecederoFactory)factory).crearProducto(
                 nombre, areaID, precio, unidades,
                 String.valueOf(codB), marca, cont
             );
         }
 
-        // Ahora insertar el producto en la base de datos
         String sql = "INSERT INTO productos (Nombre, AreaID, Precio, UnidadesDisponibles, FechaCaducidad, CodigoBarras, "
                 + "Marca, Contenido) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -693,7 +683,7 @@ public class CONSULTASDAO {
             pstmt.setInt(2, producto.getAreaID());
             pstmt.setDouble(3, producto.getPrecio());
             pstmt.setInt(4, producto.getUnidadesDisponibles());
-            pstmt.setObject(5, producto.getFechaCaducidad()); // Puede ser null para productos no perecederos
+            pstmt.setObject(5, producto.getFechaCaducidad());
             pstmt.setString(6, producto.getCodigoBarras());
             pstmt.setString(7, producto.getMarca());
             pstmt.setString(8, producto.getContenido());
@@ -701,7 +691,7 @@ public class CONSULTASDAO {
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
         } catch (SQLException e) {
-            e.printStackTrace();  // Imprimir detalles de error
+            System.out.println(e.getMessage());
             return false;
         }
     }

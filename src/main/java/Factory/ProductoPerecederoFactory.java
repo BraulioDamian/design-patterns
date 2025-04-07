@@ -15,7 +15,7 @@ public class ProductoPerecederoFactory extends ProductoFactory {
     
     @Override
     public Producto crearProducto(String nombre, int areaID, double precio, int unidades) {
-        // For perishable products, we set a default expiration date of 30 days from now
+        // Fecha por defecto de caducidad 1 mes
         LocalDate fechaCaducidad = LocalDate.now().plusDays(30);
         
         return new Producto.ProductoBuilder()

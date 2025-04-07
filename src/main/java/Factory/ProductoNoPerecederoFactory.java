@@ -14,7 +14,7 @@ public class ProductoNoPerecederoFactory extends ProductoFactory {
     
     @Override
     public Producto crearProducto(String nombre, int areaID, double precio, int unidades) {
-        // Non-perishable products don't have an expiration date
+        // Se crea sin fecha de caducidad
         return new Producto.ProductoBuilder()
                 .nombre(nombre)
                 .areaID(areaID)
