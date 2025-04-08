@@ -21,6 +21,8 @@ public class Producto implements Producto2{
     private String contenido;
     private String nombreArea;
     private int cantidad;
+    private ProductoMetadata metadata; // Estado intrínseco compartido
+
 
     public Producto(int productoID, String nombre, double precio, int cantidad) {
         this.productoID = productoID;
@@ -36,6 +38,22 @@ public class Producto implements Producto2{
         this.precio = precio;
         this.cantidad = cantidad;
     }
+
+    // Constructor modificado para usar Flyweight
+    public Producto(int productoID, ProductoMetadata metadata, int areaID, double precio,
+                   int unidadesDisponibles, int nivelReorden, LocalDate fechaCaducidad,
+                   String nombreArea, int cantidad) {
+        this.productoID = productoID;
+        this.metadata = metadata;
+        this.areaID = areaID;
+        this.precio = precio;
+        this.unidadesDisponibles = unidadesDisponibles;
+        this.nivelReorden = nivelReorden;
+        this.fechaCaducidad = fechaCaducidad;
+        this.nombreArea = nombreArea;
+        this.cantidad = cantidad;
+    }
+
     // Constructor privado para usar con el Builder
     private Producto(ProductoBuilder builder) {
         this.productoID = builder.productoID;
@@ -57,6 +75,15 @@ public class Producto implements Producto2{
     // Constructor vacío privado para el Builder
     private Producto() {
     }
+
+
+    // Métodos getter para los atributos del metadata
+    public String getNombre() { return metadata.getNombre(); }
+    public String getDescripcion() { return metadata.getDescripcion(); }
+    public String getMarca() { return metadata.getMarca(); }
+    public String getContenido() { return metadata.getContenido(); }
+    public String getTamañoNeto() { return metadata.getTamañoNeto(); }
+    public String getCodigoBarras() { return metadata.getCodigoBarras(); }
 
     // Getters
     @Override
@@ -132,6 +159,7 @@ public class Producto implements Producto2{
         private String contenido;
         private String nombreArea;
         private int cantidad;
+        private ProductoMetadata metadata;
 
         public ProductoBuilder productoID(int productoID) { this.productoID = productoID; return this; }
         public ProductoBuilder nombre(String nombre) { this.nombre = nombre; return this; }
@@ -147,6 +175,12 @@ public class Producto implements Producto2{
         public ProductoBuilder contenido(String contenido) { this.contenido = contenido; return this; }
         public ProductoBuilder nombreArea(String nombreArea) { this.nombreArea = nombreArea; return this; }
         public ProductoBuilder cantidad(int cantidad) { this.cantidad = cantidad; return this; }
+        public ProductoBuilder metadata(String nombre, String descripcion, String marca,
+                                  String contenido, String tamañoNeto, String codigoBarras) {
+        this.metadata = ProductoMetadataFactory.getMetadata(
+            nombre, descripcion, marca, contenido, tamañoNeto, codigoBarras);
+        return this;
+        }
 
         public Producto build() {
             return new Producto(this);
