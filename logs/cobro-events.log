@@ -1,0 +1,94 @@
+abr 07, 2025 10:20:18 P.M. login.LOGINN obtenerUsuarioLogueado
+INFO: Último login actualizado correctamente para el usuario: Wizard
+abr 07, 2025 10:20:42 P.M. Venta.Cobro notifyMetodoPagoSeleccionado
+INFO: Notificando método de pago: Efectivo
+abr 07, 2025 10:20:49 P.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@62f4e873
+abr 07, 2025 10:20:49 P.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@62f4e873
+abr 07, 2025 10:20:52 P.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@62f4e873
+abr 07, 2025 10:21:04 P.M. Venta.Cobro notifyVentaCompleta
+INFO: Notificando método de pago: VentaBridge.Efectivo@62f4e873
+abr 08, 2025 6:35:52 A.M. login.LOGINN obtenerUsuarioLogueado
+INFO: Último login actualizado correctamente para el usuario: Wizard
+abr 08, 2025 6:36:07 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: null
+abr 08, 2025 6:36:09 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: null
+abr 08, 2025 6:36:09 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: null
+abr 08, 2025 6:36:11 A.M. Venta.Cobro notifyMetodoPagoSeleccionado
+INFO: Notificando método de pago: Efectivo
+abr 08, 2025 6:36:15 A.M. Venta.Cobro notifyMetodoPagoSeleccionado
+INFO: Notificando método de pago: Efectivo
+abr 08, 2025 6:36:19 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@6f27486
+abr 08, 2025 6:36:24 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@6f27486
+abr 08, 2025 6:36:36 A.M. Venta.Cobro notifyVentaCompleta
+INFO: Notificando método de pago: VentaBridge.Efectivo@6f27486
+abr 08, 2025 7:07:36 A.M. login.LOGINN obtenerUsuarioLogueado
+INFO: Último login actualizado correctamente para el usuario: Wizard
+abr 08, 2025 7:07:54 A.M. Venta.Cobro notifyMetodoPagoSeleccionado
+INFO: Notificando método de pago: Efectivo
+abr 08, 2025 7:07:55 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:07:57 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:07:57 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:07:58 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:07:59 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:07:59 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:08:00 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:08:01 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:08:01 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:08:14 A.M. Venta.Cobro notifyVentaCompleta
+INFO: Notificando método de pago: VentaBridge.Efectivo@8284d67
+abr 08, 2025 7:12:35 A.M. login.LOGINN obtenerUsuarioLogueado
+INFO: Último login actualizado correctamente para el usuario: Wizard
+abr 08, 2025 7:12:49 A.M. Venta.Cobro notifyMetodoPagoSeleccionado
+INFO: Notificando método de pago: Efectivo
+abr 08, 2025 7:12:52 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:52 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:52 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:52 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:53 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:53 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:53 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:53 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:53 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:53 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:54 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:54 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:54 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:54 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:55 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:55 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:12:55 A.M. Venta.Cobro notifyMontoRecibido
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2
+abr 08, 2025 7:13:00 A.M. Venta.Cobro notifyVentaCancelada
+INFO: Notificando método de pago: VentaBridge.Efectivo@4efb85f2

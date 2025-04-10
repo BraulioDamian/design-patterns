@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package login;
 
 import Consultas.CONSULTASDAO;
@@ -13,6 +8,8 @@ import Principal.MenuPrincipal;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+
 import javax.swing.ImageIcon;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
@@ -416,17 +413,14 @@ public class LOGINN extends javax.swing.JFrame {
     }
 
     private void jPanel1FocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_jPanel1FocusGained
-        // TODO add your handling code here:
         this.requestFocusInWindow();
     }// GEN-LAST:event_jPanel1FocusGained
 
     private void jPanel3FocusGained(java.awt.event.FocusEvent evt) {// GEN-FIRST:event_jPanel3FocusGained
-        // TODO add your handling code here:
         this.requestFocusInWindow();
     }// GEN-LAST:event_jPanel3FocusGained
 
     private void btnContraseñaActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_btnContraseñaActionPerformed
-        // TODO add your handling code here:
         if (visible) {
             fieldPass.setEchoChar('*'); // Oculta la contraseña
             visible = false;
@@ -439,19 +433,24 @@ public class LOGINN extends javax.swing.JFrame {
             btnContraseña.setIcon(new ImageIcon(getClass().getResource("/Icons/abrirOjo.png")));
 
         }
-    }// GEN-LAST:event_btnContraseñaActionPerformed
+    }
 
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
-        // (optional) ">
-        /*
-         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
-         * look and feel.
-         * For details see
-         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
-         */
         try {
+            Logger mainLogger = Logger.getLogger(LOGINN.class.getName());
+            mainLogger.log(Level.INFO, "Iniciando la aplicación...");
+            mainLogger.log(Level.INFO, "Configurando el logger...");
+
+            VentaObserver.LoggerConfig.configureLogger(); // Configura el logger al inicio de la aplicación
+            System.out.println("Sistema de log iniciado correctamente");
+
+            File logFile = new File("logs/cobro-events.log");
+            if (logFile.exists()) {
+                System.out.println("El archivo de log existe en: " + logFile.getAbsolutePath());
+            } else {
+                System.out.println("El archivo de log no existe.");
+            }
+
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
@@ -466,41 +465,10 @@ public class LOGINN extends javax.swing.JFrame {
             Logger.getLogger(LOGINN.class.getName()).log(Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             Logger.getLogger(LOGINN.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            System.err.println("Error al configurar el logger: " + ex.getMessage());
+            ex.printStackTrace();
         }
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-        // </editor-fold>
-
-        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new LOGINN().setVisible(true);
@@ -508,7 +476,6 @@ public class LOGINN extends javax.swing.JFrame {
         });
     }
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton RecuperarContraseña;
     private javax.swing.JButton btnContraseña;
     private javax.swing.JPasswordField fieldPass;
@@ -516,5 +483,4 @@ public class LOGINN extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JButton txtAcceder;
-    // End of variables declaration//GEN-END:variables
 }

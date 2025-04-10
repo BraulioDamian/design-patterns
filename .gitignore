@@ -36,3 +36,14 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+DIAGRAMA_UML.md
+README.docx
+portada.pdf
+READMEmementoyfacade.md
+T2_Memento-Facade_Hernández Ruiz Kevin Eduardo.pdf
+tickets
+VentaMemento
+VentaBridge
+CobroFacade
+.gitignore

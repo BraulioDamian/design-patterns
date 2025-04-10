@@ -1,47 +1,78 @@
 package Venta;
 
 import DBObjetos.Producto;
-import DBObjetos.Usuario;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
-import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
-import java.awt.Desktop;
+import VentaBridge.Efectivo;
+import VentaBridge.MetodoPago;
+
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.time.format.DateTimeFormatter;
-import login.SesionManager;
 
 import VentaMemento.CobroMemento;
 import VentaMemento.CobroOriginator;
+import VentaObserver.CobroObserver;
 import CobroFacade.CobroFacade;
 import CobroFacade.PagoFacade;
+import java.util.ArrayList;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author frix4
- */
 public class Cobro extends JFrame {
 
-    /**
-     * Creates new form Cobro
-     */
+    private ArrayList<CobroObserver> observers = new ArrayList<>();
+    private static final Logger LOGGER = Logger.getLogger(Cobro.class.getName());
+
+    public void addObserver(CobroObserver observer) {
+        observers.add(observer);
+    }
+
+    public void removeObserver(CobroObserver observer) {
+        observers.remove(observer);
+    }
+
+    private void notifyMetodoPagoSeleccionado(String metodoPago) {
+        System.out.println("Comenzando notificacion de metodo de pago: " + metodoPago);
+        for (CobroObserver observer : observers) {
+            System.out.println("Notificando a observador: " + observer.getClass().getSimpleName());
+            LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
+            observer.onMetodoPagoSeleccionado(metodoPago);
+        }
+        System.out.println("Nitificacion de metodo de pago completada");
+    }
+
+    private void notifyMontoRecibido(double monto) {
+        for (CobroObserver observer : observers) {
+            LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
+            observer.onMontoRecibido(monto);
+        }
+    }
+
+    private void notifyCambioCalculado(double cambio) {
+        for (CobroObserver observer : observers) {
+            LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
+            observer.onCambioCalculado(cambio);
+        }
+    }
+
+    private void notifyVentaCompleta(double totalVenta, double montoRecibido, double cambio) {
+        for (CobroObserver observer : observers) {
+            LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
+            observer.onVentaCompleta(totalVenta, montoRecibido, cambio);
+        }
+    }
+
+    private void notifyVentaCancelada() {
+        LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
+        for (CobroObserver observer : observers) {
+            observer.onVentaCancelada();
+        }
+    }
 
     private double montoTotal;
 
@@ -133,11 +164,10 @@ public class Cobro extends JFrame {
 
     CobroOriginator originator = new CobroOriginator(this);
     CobroMemento savedState;
-    // originator.restore(savedState);
 
     NumeroEnPalabras converter = new NumeroEnPalabras();
     String precioEnLetras;
-    List<Producto> productos; // Lista de productos para generar el ticket
+    List<Producto> productos;
     private VentaListener ventaListener;
 
     public interface VentaListener {
@@ -146,8 +176,20 @@ public class Cobro extends JFrame {
 
     public Cobro() {
 
+        VentaObserver.LoggerConfig.configureLogger();
+
+        File logFile = new File("logs/cobro-events.log");
+        if (logFile.exists()) {
+            System.out.println("Archivo de log creado en " + logFile.getAbsolutePath());
+        } else {
+            System.out.println("No se pudo crear el archivo de log.");
+        }
+
         initComponents();
         setLocationRelativeTo(null); // Centra la ventana en la pantalla
+
+        addObserver(new VentaObserver.CobroLogObserver());
+        addObserver(new VentaObserver.UICobroObserver());
 
         double importe = Double.parseDouble(recibi.getText());
 
@@ -218,6 +260,8 @@ public class Cobro extends JFrame {
     private void calcularCambio() {
         try {
             double montoRecibido = Double.parseDouble(recibi.getText());
+            System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
+            notifyMontoRecibido(montoRecibido);
             if (montoRecibido >= pre) {
                 cambio = montoRecibido - pre;
                 camb.setText(String.format("$%.2f", cambio));
@@ -225,7 +269,7 @@ public class Cobro extends JFrame {
                 camb.setText("Insuficiente");
             }
         } catch (NumberFormatException e) {
-            camb.setText(""); // Limpiar el texto si el campo está vacío o no es numérico
+            camb.setText("");
         }
     }
 
@@ -439,18 +483,73 @@ public class Cobro extends JFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
                                 javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE));
 
+        // JPanel panelEventos = new JPanel(new BorderLayout());
+        // JTextArea areaEventos = new JTextArea(10, 10);
+        // panelEventos.setBorder(BorderFactory.createTitledBorder("Eventos de Cobro"));
+        // areaEventos.setEditable(false);
+        // panelEventos.add(new JScrollPane(areaEventos), BorderLayout.CENTER);
+
+        // jPanel1.add(panelEventos, BorderLayout.SOUTH);
+        // addObserver(new VentaObserver.IntegratedUIObserver(areaEventos));
+
+        // jPanel1.setLayout(new BorderLayout());
+        // jPanel1.add(panelEventos, BorderLayout.SOUTH);
+
+        // jPanel1.add(panelEventos, BorderLayout.SOUTH);
         pack();
+
+        JFrame eventFrame = new JFrame("Monitor de Eventos - Patrón Observer");
+        JTextArea areaEventos = new JTextArea(15, 40);
+        areaEventos.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(areaEventos);
+        eventFrame.add(scrollPane);
+        eventFrame.pack();
+        eventFrame.setLocation(this.getLocation().x + this.getWidth() + 10, this.getLocation().y);
+        eventFrame.setVisible(true);
+
+        addObserver(new VentaObserver.IntegratedUIObserver(areaEventos));
+
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                eventFrame.dispose(); // Cierra el JFrame de eventos al cerrar la ventana principal
+            }
+
+            public void windowClosed(WindowEvent e) {
+                eventFrame.dispose(); // Cierra el JFrame de eventos al cerrar la ventana principal
+            }
+        });
+
+        // addObserver(new VentaObserver.IntegratedUIObserver(areaEventos));
     }// </editor-fold>//GEN-END:initComponents
 
     private void efectivoMouseClicked(java.awt.event.MouseEvent evt) {
+        setMetodoPago(new Efectivo());
+    }
+
+    private void tarjetaMouseClicked(java.awt.event.MouseEvent evt) {
+        setMetodoPago(new Efectivo());
+    }
+
+    private MetodoPago metodoPago;
+
+    public void setMetodoPago(MetodoPago metodoPago) {
+        this.metodoPago = metodoPago;
+        System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
+        notifyMetodoPagoSeleccionado(metodoPago.getClass().getSimpleName());
     }
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {
 
-        if (!pagoFacade.validarMetodoDePago(efectivo.isSelected(),
-                tarjeta.isSelected())) {
+        if (metodoPago == null) {
+            JOptionPane.showMessageDialog(this, "Por favor, seleccione un método de pago.");
             return;
         }
+
+        // if (!pagoFacade.validarMetodoDePago(efectivo.isSelected(),
+        // tarjeta.isSelected())) {
+        // return;
+        // }
 
         String textoRecibi = recibi.getText().trim();
         if (textoRecibi.isEmpty()) {
@@ -466,18 +565,29 @@ public class Cobro extends JFrame {
         try {
             double pago = Double.parseDouble(textoRecibi);
 
-            if (!pagoFacade.validarMonto(pago, pre)) {
+            // if (!pagoFacade.validarMonto(pago, pre)) {
+            // return;
+            // }
+
+            if (!metodoPago.validarMonto(pago, pre)) {
+                JOptionPane.showMessageDialog(this, "El monto recibido no puede ser menor al total a pagar.");
                 return;
             }
 
-            cambio = pagoFacade.calcularCambio(pago, pre);
+            // cambio = pagoFacade.calcularCambio(pago, pre);
+            cambio = metodoPago.calcularCambio(pago, pre);
             camb.setText("$" + String.format("%.2f", cambio));
 
             String pdfPath = pagoFacade.generarPDF(productos, pre, pago, cambio);
+            // String pdfPath = metodoPago.generarPDF(productos, pre, pago, cambio);
 
             if (pdfPath != null) {
-                boolean flag = pagoFacade.enviarTicketPorCorreo(txtCorreo.getText(), pdfPath);
+                // boolean flag = pagoFacade.enviarTicketPorCorreo(txtCorreo.getText(),
+                // pdfPath);
+                boolean flag = metodoPago.enviarTicketPorCorreo(txtCorreo.getText(), pdfPath);
                 if (flag) {
+                    System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
+                    notifyVentaCompleta(pago, pago, pago);
                     if (ventaListener != null) {
                         ventaListener.onVentaCompleta();
                     }
@@ -486,14 +596,14 @@ public class Cobro extends JFrame {
 
             }
 
-            
-
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Por favor, introduzca un monto válido enel campo 'Recibí'.");
         }
     }
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
+        System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
+        notifyVentaCancelada();
         dispose();
     }// GEN-LAST:event_jButton4ActionPerformed
 
@@ -530,6 +640,9 @@ public class Cobro extends JFrame {
                 new Cobro().setVisible(true);
             }
         });
+
+        VentaObserver.LoggerConfig.configureLogger();
+        System.out.println("Logger configurado correctamente.");
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
