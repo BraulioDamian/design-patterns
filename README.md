@@ -1,31 +1,31 @@
----
-
-# 📚 Documentación del Patrón Singleton en el Sistema  
+# 📚 Documentación Técnica del Patrón Singleton  
 **Proyecto:** Sistema de Gestión de Tienda Abarrotes  
-**Clase Principal:** `SesionManager`  
+**Componente Principal:** `SesionManager` y `LOGINN`  
 
 ---
 
 ## 🎯 Objetivo del Patrón Singleton  
-Garantizar que la clase `SesionManager` cumpla con:  
-1. **Unicidad:** Una única instancia en toda la aplicación.  
-2. **Acceso Global:** Disponible desde cualquier componente.  
-3. **Centralización:** Gestión unificada de la sesión del usuario.
+Garantizar que:  
+1. **Solo exista una instancia** de `SesionManager` durante toda la ejecución.  
+2. **Acceso global controlado** a la sesión del usuario.  
+3. **Centralización** de la lógica de autenticación y autorización.
 
 ---
 
-## 🔍 Implementación Técnica  
+## 🛠️ Implementación en el Código  
 
-### 1. Estructura de la Clase Singleton  
+### 1. Clase `SesionManager` (Singleton)  
+**Ruta:** `DBObjetos/SesionManager.java`  
+
 ```java
 public class SesionManager {
-    // 1. Atributo estático para almacenar la única instancia
+    // 1. Atributo estático para la única instancia
     private static SesionManager instance;
     
     // 2. Referencia al usuario autenticado
     private Usuario usuarioLogueado;
 
-    // 3. Constructor privado (bloquea la instanciación externa)
+    // 3. Constructor privado (bloquea instanciación externa)
     private SesionManager() { }
 
     // 4. Método de acceso global sincronizado
@@ -37,22 +37,36 @@ public class SesionManager {
     }
 
     // Métodos de gestión de sesión
-    public void login(Usuario usuario) { ... }
-    public void logout() { ... }
-    public Usuario getUsuarioLogueado() { ... }
+    public void login(Usuario usuario) { 
+        this.usuarioLogueado = usuario; 
+    }
+    
+    public void logout() { 
+        this.usuarioLogueado = null;
+        resetSingletons(); // Reinicia otros componentes Singleton
+    }
+    
+    public Usuario getUsuarioLogueado() { 
+        return usuarioLogueado; 
+    }
+    
+    private void resetSingletons() {
+        // Reinicia otros Singletons (ej: MenuPrincipal, Venta)
+    }
 }
 ```
 
 ---
 
-## 🛠️ Uso en el Código  
+### 2. Flujo de Autenticación en `LOGINN.java`  
+**Ruta:** `login/LOGINN.java`  
 
-### 1. Flujo de Autenticación (LOGINN.java)  
+#### a. Método `txtAccederActionPerformed`  
 ```java
 private void txtAccederActionPerformed(java.awt.event.ActionEvent evt) {
-    Usuario usuario = obtenerUsuarioLogueado(); // Validación BD
+    Usuario usuario = obtenerUsuarioLogueado(); // Validación contra BD
     if (usuario != null) {
-        // 1. Obtener instancia única de SesionManager
+        // 1. Obtener instancia Singleton
         SesionManager sesion = SesionManager.getInstance();
         
         // 2. Registrar usuario en el Singleton
@@ -63,50 +77,38 @@ private void txtAccederActionPerformed(java.awt.event.ActionEvent evt) {
         menu.initialize(usuario);
         menu.setVisible(true);
         
-        this.dispose(); // Cerrar ventana de login
+        this.dispose(); // Cierra ventana de login
     }
 }
 ```
 
----
-
-### 2. Cierre de Sesión  
+#### b. Método `obtenerUsuarioLogueado`  
 ```java
-public void logout() {
-    this.usuarioLogueado = null;
-    resetSingletons(); // Reinicia otros componentes Singleton
-}
-
-private void resetSingletons() {
-    MenuPrincipal.getInstance().reset(); // Ejemplo de otro Singleton
-    Venta.getInstance().reset(); 
-}
-```
-
----
-
-## 🌐 Integración con Otros Componentes  
-
-### 1. Validación de Permisos (Ejemplo en MenuPrincipal)  
-```java
-public class MenuPrincipal extends javax.swing.JFrame {
-    private static MenuPrincipal instance;
+private Usuario obtenerUsuarioLogueado() {
+    String nombreUsuario = fieldUser.getText();
+    String contrasena = new String(fieldPass.getPassword());
     
-    // Singleton para el menú principal
-    public static MenuPrincipal getInstance() { ... }
-
-    public void initialize(Usuario usuario) {
-        // Configura UI según el rol del usuario
-        if(usuario.getRol() == Usuario.Rol.ADMINISTRADOR) {
-            btnUsuarios.setVisible(true);
+    try {
+        CONSULTASDAO consultasDAO = new CONSULTASDAO(Conexion_DB.getConexion());
+        Usuario usuario = consultasDAO.validarUsuario(nombreUsuario, contrasena);
+        
+        if (usuario != null) {
+            // Actualiza último login en BD
+            consultasDAO.updateLastLogin(usuario.getUsuarioID());
+            return usuario;
         }
+    } catch (SQLException e) {
+        LOGGER.log(Level.SEVERE, "Error de base de datos", e);
     }
+    return null;
 }
 ```
 
 ---
 
-## 🖥️ Diagrama UML (Mermaid)  
+## 🖥️ Diagramas Técnicos  
+
+### 1. Diagrama UML (Mermaid)  
 ```mermaid
 classDiagram
     class SesionManager {
@@ -128,45 +130,146 @@ classDiagram
         +getRol(): Rol
     }
     
+    class LOGINN {
+        +txtAccederActionPerformed()
+        +obtenerUsuarioLogueado(): Usuario
+    }
+    
     SesionManager --> Usuario : «usa»
     LOGINN --> SesionManager : «invoca»
-    MenuPrincipal --> SesionManager : «usa»
+```
+
+### 2. Flujo de Autenticación (Sequence Diagram)  
+```mermaid
+sequenceDiagram
+    participant Usuario
+    participant LOGINN
+    participant SesionManager
+    participant BD
+    
+    Usuario->>LOGINN: Ingresa credenciales
+    LOGINN->>BD: Verifica usuario (validarUsuario())
+    BD-->>LOGINN: Retorna Usuario si es válido
+    LOGINN->>SesionManager: getInstance().login(usuario)
+    SesionManager->>SesionManager: Guarda usuarioLogueado
+    LOGINN->>MenuPrincipal: Muestra ventana
+```
+
+---
+
+## 🔒 Control de Seguridad  
+
+### 1. Validación de Credenciales  
+- **En `CONSULTASDAO`:**  
+  ```java
+  public Usuario validarUsuario(String nombre, String pass) throws SQLException {
+      String query = "SELECT * FROM usuarios WHERE nombreUsuario = ? AND contraseña = ?";
+      try (PreparedStatement stmt = conexion.prepareStatement(query)) {
+          stmt.setString(1, nombre);
+          stmt.setString(2, pass);
+          ResultSet rs = stmt.executeQuery();
+          if (rs.next()) {
+              return new Usuario(
+                  rs.getInt("usuarioID"),
+                  rs.getString("nombreUsuario"),
+                  rs.getString("contraseña"),
+                  // ... otros campos
+              );
+          }
+      }
+      return null;
+  }
+  ```
+
+### 2. Gestión de Roles  
+```java
+public enum Rol {
+    ADMINISTRADOR,
+    GERENTE,
+    EMPLEADO,
+    SUPERVISOR
+}
+```
+
+**Uso en `MenuPrincipal`:**  
+```java
+public void initialize(Usuario usuario) {
+    if(usuario.getRol() == Rol.ADMINISTRADOR) {
+        btnUsuarios.setVisible(true); // Mostrar opciones de administrador
+    }
+}
 ```
 
 ---
 
 ## 🚦 Control de Concurrencia  
-El método `getInstance()` usa `synchronized` para:  
-- 🔒 Evitar creación múltiple de instancias en entornos multithread.  
-- ⚡ Penalización mínima de rendimiento (~3% en benchmarks).
+- El método `getInstance()` usa `synchronized` para:  
+  - 🛡️ Evitar condiciones de carrera en entornos multithread.  
+  - ⚡ Penalización mínima de rendimiento (~3% en benchmarks).  
 
 ---
 
-## 📝 Ejemplos de Uso  
+## 📝 Casos de Uso  
 
-### 1. Verificar Sesión Activa  
-```java
-if(SesionManager.getInstance().getUsuarioLogueado() != null) {
-    // Permitir acceso a funcionalidades
-}
-```
-
-### 2. Obtener Rol del Usuario  
+### 1. Verificar Permisos en Cualquier Clase  
 ```java
 Usuario usuario = SesionManager.getInstance().getUsuarioLogueado();
-if(usuario.getRol() == Usuario.Rol.ADMINISTRADOR) {
-    // Mostrar opciones de administrador
+if(usuario != null && usuario.getRol() == Rol.ADMINISTRADOR) {
+    // Permitir acceso a funcionalidades críticas
 }
+```
+
+### 2. Cerrar Sesión y Reiniciar Componentes  
+```java
+SesionManager.getInstance().logout(); // Cierra sesión y reinicia otros Singletons
 ```
 
 ---
 
-## 🌟 Ventajas en el Código  
-| Característica         | Beneficio                                                                 |
-|------------------------|---------------------------------------------------------------------------|
-| **Centralización**     | Todas las operaciones de sesión pasan por un único punto (`SesionManager`). |
-| **Consistencia**       | Garantiza que el estado del usuario sea consistente en toda la aplicación. |
-| **Seguridad**          | Controla el acceso a funcionalidades según el rol del usuario.            |
-| **Mantenibilidad**     | Cambios en la lógica de sesión solo requieren modificaciones en una clase. |
+## ⚠️ Consideraciones Importantes  
+
+### 1. Problemas Potenciales  
+- **Reflexión:** Java permite romper el Singleton vía reflexión.  
+  **Solución:** Usar `enum` para implementar el Singleton.  
+
+- **Serialización:** Si la clase es serializable, podría crear nuevas instancias.  
+  **Solución:** Implementar `readResolve()`.  
+
+### 2. Mejoras Recomendadas  
+- **Inyección de Dependencias:** Para facilitar pruebas unitarias.  
+- **Logger:** Registrar eventos críticos (ej: inicio/cierre de sesión).  
+- **Timeout:** Implementar expiración de sesión por inactividad.  
 
 ---
+
+## 📌 Código Fuente Relacionado  
+
+### 1. `Usuario.java` (Clase de Dominio)  
+```java
+public class Usuario {
+    private int usuarioID;
+    private String nombreUsuario;
+    private String contraseña;
+    private Rol rol;
+    // ... otros campos y métodos
+}
+```
+
+### 2. `Conexion_DB.java` (Singleton para Base de Datos)  
+```java
+public class Conexion_DB {
+    private static Conexion_DB instance;
+    private Connection conexion;
+    
+    private Conexion_DB() {
+        // Lógica de conexión a BD
+    }
+    
+    public static Conexion_DB getInstance() {
+        if(instance == null) {
+            instance = new Conexion_DB();
+        }
+        return instance;
+    }
+}
+```
