@@ -69,30 +69,28 @@ En el método `txtAccederActionPerformed` de la clase `LOGINN` se observa el uso
 El siguiente diagrama UML representa la estructura de la clase **SesionManager**:
 
 ```mermaid
-@startuml
+classDiagram
+    class Usuario {
+    }
 
-class Usuario
+    class SesionManager {
+        - static SesionManager instance
+        - Usuario usuarioLogueado
+        - SesionManager()
+        + static synchronized SesionManager getInstance()
+        + void login(Usuario usuario)
+        + void logout()
+        + Usuario getUsuarioLogueado()
+        + String toString()
+        - void resetSingletons()
+    }
 
-class SesionManager {
-    - static SesionManager instance
-    - Usuario usuarioLogueado
-    - SesionManager()
-    + static synchronized SesionManager getInstance()
-    + void login(Usuario usuario)
-    + void logout()
-    + Usuario getUsuarioLogueado()
-    + String toString()
-    - void resetSingletons()
-}
+    class LOGINN {
+        + void txtAccederActionPerformed(ActionEvent evt)
+    }
 
-class LOGINN {
-    + void txtAccederActionPerformed(ActionEvent evt)
-}
-
-SesionManager --> Usuario : usa
-LOGINN --> SesionManager : invoca
-
-@enduml
+    SesionManager --> Usuario : usa
+    LOGINN --> SesionManager : invoca
 
 ```
 
