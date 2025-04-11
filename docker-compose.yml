@@ -1,30 +1,32 @@
+version: '3.8'
+
 services:
   app:
     build: .
     environment:
-      DISPLAY: host.docker.internal:0  # Puerto X11 para Windows
       DB_HOST: db
       DB_PORT: 3306
       DB_NAME: dbtienda
       DB_USER: root
       DB_PASSWORD: 123456
+      DISPLAY: host.docker.internal:0
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix  # Solo para Linux
       - ./logs:/app/logs
+      - /tmp/.X11-unix:/tmp/.X11-unix  # Solo Linux/Mac
     depends_on:
       db:
         condition: service_healthy
 
   db:
     image: mysql:8.0.41
-    command: --skip-host-cache --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
       MYSQL_ROOT_PASSWORD: 123456
       MYSQL_DATABASE: dbtienda
     ports:
-      - "3308:3306"  # Host:3308 -> Contenedor:3306
+      - "3308:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
