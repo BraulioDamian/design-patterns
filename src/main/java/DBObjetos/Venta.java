@@ -24,6 +24,23 @@ public class Venta {
         this.precioTotal = precioTotal;
     }
 
+    Venta() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+    
+   
+    public void realizarVenta(int usuarioID, LocalDateTime fechaVenta, double precioTotal) {
+        this.usuarioID = usuarioID;
+        this.fechaVenta = fechaVenta;
+        this.precioTotal = precioTotal;
+
+        System.out.println("Venta realizada:");
+        System.out.println("UsuarioID: " + usuarioID);
+        System.out.println("Fecha de Venta: " + fechaVenta);
+        System.out.println("Precio Total: " + precioTotal);
+
+    }
+    
     // Getters
     public int getVentaID() {
         return ventaID;

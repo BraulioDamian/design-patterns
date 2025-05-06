@@ -5,8 +5,10 @@ import ConexionDB.Conexion_DB;
 import Configuraciones.Configuraciones;
 import Configuraciones.Estilos;
 import Consultas.CONSULTASDAO;
+import DBObjetos.IVenta;
 import DBObjetos.Producto;
 import DBObjetos.Usuario;
+import DBObjetos.VentaProxy;
 import Graficas.AvisosFrame;
 import INVENTARIO.Principal2_0;
 import INVENTARIO.AnimacionPanel;
@@ -17,6 +19,7 @@ import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,10 +59,15 @@ public class Venta extends JFrame {
 
     private Usuario usuarioLogueado;
     private boolean menuDesplegado = false;
+    private IVenta ventaProxy;
+    
+    private javax.swing.JTextField txtUsuarioID;
+private javax.swing.JTextField txtPrecioTotal;
 
     
     private Venta() {
         setUndecorated(true); // Hacer que el JFrame sea indecorado
+        ventaProxy = (IVenta) new VentaProxy();
 
         initComponents();
         setLocationRelativeTo(null); // Centramos la ventana en la pantalla
@@ -157,6 +165,21 @@ public class Venta extends JFrame {
         HoverEffect.applyHoverEffect(Analisis);
         HoverEffect.applyHoverEffect(Inventario);
     }
+    
+    private void btnRealizarVentaActionPerformed(java.awt.event.ActionEvent evt) {
+        // Obtener los datos de la interfaz gráfica
+        int usuarioID = Integer.parseInt(txtUsuarioID.getText());
+        LocalDateTime fechaVenta = LocalDateTime.now();
+        double precioTotal = Double.parseDouble(txtPrecioTotal.getText());
+
+        // Realizar la venta a través del proxy
+        ventaProxy.realizarVenta(usuarioID, fechaVenta, precioTotal);
+
+        // Limpiar los campos o mostrar un mensaje de éxito
+        JOptionPane.showMessageDialog(this, "Venta realizada con éxito.");
+    }
+    
+    
     
     
         private Venta(Usuario usuario) {

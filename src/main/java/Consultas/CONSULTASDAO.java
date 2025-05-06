@@ -49,11 +49,11 @@ public class CONSULTASDAO {
 
 
  public boolean insertarProducto(Producto producto) {
-        // Crear el producto editable
+       
         Producto editable = producto.clone();
         Producto Noeditable = producto.crearProductoNoEditable();
         
-        // Insertar el mismo producto editable dos veces en la base de datos
+        
         boolean editableInsertado1 = insertarProductoEnBD(editable);
         boolean editableInsertado2 = insertarProductoEnBD2(Noeditable);
 
@@ -70,7 +70,7 @@ private boolean insertarProductoEnBD(Producto producto) {
             stmt.setDouble(4, producto.getPrecio());
             stmt.setInt(5, producto.getUnidadesDisponibles());
             stmt.setInt(6, producto.getNivelReorden());
-            stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad()));  // Asegúrate de convertir LocalDate a sql.Date
+            stmt.setDate(7, Date.valueOf(producto.getFechaCaducidad())); 
             stmt.setString(8, producto.getCodigoBarras());
             stmt.setString(9, producto.getTamañoNeto());
             stmt.setString(10, producto.getMarca());

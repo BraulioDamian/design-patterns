@@ -18,7 +18,6 @@ public class Producto implements Cloneable {
     private String nombreArea;
     private int cantidad;
 
-    // Constructor privado para usar con el Builder
     private Producto(ProductoBuilder builder) {
         this.productoID = builder.productoID;
         this.nombre = builder.nombre;
@@ -52,7 +51,6 @@ public class Producto implements Cloneable {
         return noEditable;
     }
 
-    // Getters
     public int getProductoID() { return productoID; }
     public String getNombre() { return nombre; }
     public String getDescripcion() { return descripcion; }
@@ -68,7 +66,7 @@ public class Producto implements Cloneable {
     public String getNombreArea() { return nombreArea; }
     public int getCantidad() { return cantidad; }
 
-    // Setters 
+    
     public void setProductoID(int productoID) { this.productoID = productoID; }
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
