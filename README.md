@@ -1,189 +1,127 @@
-# Patrón Observer en el Sistema de Cobro
-## Introducción al Patrón Observer
-El patrón Observer implementado en el sistema de cobro establece un mecanismo de notificación donde los objetos (observadores) son informados automáticamente sobre cambios de estado en otro objeto (sujeto). Esta implementación permite monitorear en tiempo real el proceso de cobro, tanto para fines de desarrollo como para mejorar la experiencia del usuario final.
+# Implementación del Patrón State en la Clase Cobro
 
-## Componentes Principales
-### Interfaz CobroObserver
-Se creó la interfaz `CobroObserver` que define los métodos que deben implementar todos los observadores:
+## ¿Qué es el Patrón State?
 
-``` java
-public interface CobroObserver {
-    void onMetodoPagoSeleccionado(String metodoPago);
-    void onMontoRecibido(double monto);
-    void onCambioCalculado(double cambio);
-    void onVentaCompleta(double total, double recibido, double cambio);
-    void onVentaCancelada();
-}
-```
+El patrón State es un patrón de diseño de comportamiento que permite a un objeto alterar su comportamiento cuando su estado interno cambia. Parecerá como si el objeto cambiara de clase. Este patrón:
 
-### Clase Sujeto (Cobro)
-La clase `Cobro` se modificó para actuar como sujeto observable:
-``` java
-private ArrayList<CobroObserver> observers = new ArrayList<>();
+1. Encapsula los diferentes comportamientos en clases de estado separadas
+2. Delega las solicitudes al objeto de estado actual
+3. Permite transiciones entre estados de manera limpia y organizada
 
-public void addObserver(CobroObserver observer) {
-    observers.add(observer);
-}
+## Mejoras aportadas por la implementación del State
 
-public void removeObserver(CobroObserver observer) {
-    observers.remove(observer);
-}
-```
+### 1. Organización y claridad del código
 
-### Métodos de Notificación
-Se implementaron métodos específicos en la clase `Cobro` para notificar a los observadores sobre diferentes eventos:
+**Antes:** La lógica de los diferentes estados (selección de método de pago, validación, procesamiento) estaba mezclada en los métodos de la clase Cobro, haciendo difícil mantener y extender el código.
+
+**Después:** Cada estado tiene su propia clase con responsabilidades claramente definidas, lo que hace el código más legible y mantenible.
+
+### 2. Manejo consistente de transiciones de estado
+
+**Antes:** Las transiciones entre estados se manejaban con flags y condicionales complejos dentro de los métodos.
+
+**Después:** Cada estado sabe a qué otro estado puede transicionar y bajo qué condiciones, siguiendo el principio de responsabilidad única.
+
+### 3. Validaciones más robustas
+
+**Antes:** Las validaciones estaban dispersas en diferentes métodos y a veces se repetían.
+
+**Después:** Cada estado maneja sus propias validaciones de manera consistente:
 ```java
-private void notifyMetodoPagoSeleccionado(String metodoPago) {...}
-private void notifyMontoRecibido(double monto) {...}
-private void notifyCambioCalculado(double cambio) {...}
-private void notifyVentaCompleta(double totalVenta, double montoRecibido, double cambio) {...}
-private void notifyVentaCancelada() {...}
-```
-
-### Observadores Concretos
-Se implementaron dos tipos de observadores:
-
-CobroLogObserver: Registra eventos en el archivo de log
-UICobroObserver: Muestra eventos en una ventana gráfica
-IntegratedUIObserver: Muestra eventos dentro de la interfaz de cobro
-
-## Sistema de Logging
-### Configuración del Logger
-Se creó la clase `LoggerConfig` para configurar el sistema de logging:
-``` java
-public static void configureLogger() {
-    // Crear directorio de logs
-    File logDir = new File("logs");
-    if (!logDir.exists()) {
-        logDir.mkdir();
-    }
-    
-    // Configurar logger
-    Logger rootLogger = Logger.getLogger("");
-    rootLogger.setLevel(Level.INFO);
-    
-    // Handlers para consola y archivo
-    ConsoleHandler consoleHandler = new ConsoleHandler();
-    FileHandler fileHandler = new FileHandler(LOG_FILE, true);
-    // ...
-}
-```
-
-### Integración de Logging
-Los métodos de notificación utilizan el logger para registrar eventos:
-``` java
-LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
-```
-
-## Visualización de Eventos
-### Ventana de Monitoreo
-Se implementó una ventana independiente para mostrar los eventos en tiempo real:
-``` java
-JFrame eventFrame = new JFrame("Monitor de Eventos - Patrón Observer");
-JTextArea areaEventos = new JTextArea(15, 40);
-areaEventos.setEditable(false);
-JScrollPane scrollPane = new JScrollPane(areaEventos);
-eventFrame.add(scrollPane);
-eventFrame.pack();
-eventFrame.setLocation(this.getLocation().x + this.getWidth() + 10, this.getLocation().y);
-eventFrame.setVisible(true);
-
-addObserver(new VentaObserver.IntegratedUIObserver(areaEventos));
-```
-
-### Ciclo de Vida de la Ventana
-La ventana de monitoreo se cierra automáticamente cuando se cierra la ventana principal:
-``` java 
-this.addWindowListener(new WindowAdapter() {
-    @Override
-    public void windowClosing(WindowEvent e) {
-        eventFrame.dispose();
-    }
-    
-    public void windowClosed(WindowEvent e) {
-        eventFrame.dispose();
-    }
-});
-```
-
-## Registro de Puntos de Observación
-Se implementaron puntos de notificación en las siguientes acciones:
-
-### Selección de Método de Pago
-``` java
-public void setMetodoPago(MetodoPago metodoPago) {
-    this.metodoPago = metodoPago;
-    System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
-    notifyMetodoPagoSeleccionado(metodoPago.getClass().getSimpleName());
-}
-```
-### Cálculo de Cambio
-``` java
-private void calcularCambio() {
-    try {
-        double montoRecibido = Double.parseDouble(recibi.getText());
-        System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
-        notifyMontoRecibido(montoRecibido);
-        // ...
-    }
-    // ...
-}
-```
-### Completar Venta
-``` java
-if (flag) {
-    System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
-    notifyVentaCompleta(pago, pago, pago);
-    // ...
-}
-```
-### Cancelar Venta
-``` java
-private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
-    System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
-    notifyVentaCancelada();
-    dispose();
-}
-```
-## Integración en el Sistema
-
-### Inicialización del Logger
-El sistema de logging se inicializa en el constructor de `Cobro` y en el método `main`:
-``` java
-public Cobro() {
-    VentaObserver.LoggerConfig.configureLogger();
-    
-    File logFile = new File("logs/cobro-events.log");
-    if (logFile.exists()) {
-        System.out.println("Archivo de log creado en " + logFile.getAbsolutePath());
+// Ejemplo en EstadoEfectivoSeleccionado
+@Override
+public void ingresarMonto(Venta.Cobro cobro, double monto) {
+    if (monto >= cobro.getPre()) {
+        double cambio = monto - cobro.getPre();
+        cobro.setCambio(cambio);
+        cobro.notifyCambioCalculado(cambio);
+        cobro.setEstadoActual(new EstadoMontoValidado());
     } else {
-        System.out.println("No se pudo crear el archivo de log.");
+        JOptionPane.showMessageDialog(cobro, "El monto ingresado es insuficiente.");
     }
-    
+}
+```
+
+### 4. Comportamiento específico por estado
+
+**Antes:** El comportamiento variaba según flags booleanos (efectivoSeleccionado, tarjetaSeleccionada).
+
+**Después:** Cada estado implementa su propia versión de los métodos:
+```java
+// Comportamiento diferente en EstadoEfectivoSeleccionado vs EstadoTarjetaSeleccionada
+@Override
+public boolean procesarPago(Venta.Cobro cobro) {
+    // Implementación específica para tarjeta
+    if (cobro.getCorreo().trim().isEmpty()) {
+        JOptionPane.showMessageDialog(cobro, 
+            "Por favor, ingrese un correo electrónico para enviar el comprobante.");
+        return false;
+    }
     // ...
 }
 ```
 
-### Registro de Observadores
-Se registran múltiples observadores en el constructor de Cobro:
-``` java
-addObserver(new VentaObserver.CobroLogObserver());
-addObserver(new VentaObserver.UICobroObserver());
-// ...
-addObserver(new VentaObserver.IntegratedUIObserver(areaEventos));
-```
-## Beneficios de la Implementación
-Desacoplamiento: Separa la lógica de cobro de la lógica de monitoreo
-Extensibilidad: Facilita añadir nuevos tipos de observadores sin modificar la clase `Cobro`
-Transparencia: Proporciona visibilidad de los procesos internos, beneficiando tanto a desarrolladores como a usuarios finales
-Depuración mejorada: Facilita la detección y resolución de problemas
-Auditoría: Proporciona un registro detallado de las operaciones realizadas
-## Ubicación de Archivos de Log
-Los logs se almacenan en:
+### 5. Mejor manejo de errores
 
-Ubicación: `cobro-events.log`
-Formato: Texto plano con registros de fecha, hora y mensaje
-Persistencia: Mantiene historial entre ejecuciones (append mode)
+**Antes:** Los mensajes de error eran genéricos y no siempre contextuales.
+
+**Después:** Cada estado provee mensajes de error específicos:
+```java
+// En EstadoProcesandoPago
+@Override
+public void seleccionarMetodoPago(Venta.Cobro cobro, String metodoPago) {
+    JOptionPane.showMessageDialog(cobro, 
+        "No se puede cambiar el método de pago mientras se procesa la transacción.");
+}
+```
+
+### 6. Extensibilidad
+
+**Antes:** Añadir nuevos estados o comportamientos requería modificar la clase Cobro directamente.
+
+**Después:** Se pueden añadir nuevos estados simplemente implementando la interfaz CobroState, sin modificar la clase Cobro:
+```java
+public class NuevoEstado implements CobroState {
+    // Implementación de los métodos requeridos
+}
+```
+
+### 7. Mejor integración con otros patrones
+
+El State trabaja bien con:
+- **Observer**: Notificando cambios de estado
+- **Memento**: Guardando y restaurando estados
+- **Facade**: Simplificando interacciones complejas
+
+## Impacto en la Clase Cobro
+
+La clase Cobro ahora:
+1. Delega el comportamiento a los objetos de estado
+2. Es más simple y enfocada en coordinar las transiciones
+3. Tiene una estructura más limpia para añadir nuevos estados
+4. Maneja mejor las precondiciones y postcondiciones para cada operación
+
+## Ejemplo de Flujo con State
+
+1. **EstadoInicial**: Esperando selección de método de pago
+2. **EstadoEfectivoSeleccionado**: Validando monto recibido
+3. **EstadoMontoValidado**: Listo para procesar pago
+4. **EstadoProcesandoPago**: Generando ticket y enviando correo
+5. **EstadoVentaCompletada**: Operación finalizada
+
+Cada transición es manejada por el estado actual, manteniendo la coherencia en todo el proceso.
+
+## Conclusión
+
+La implementación del patrón State en la clase Cobro ha mejorado significativamente su diseño al:
+- Separar claramente las responsabilidades
+- Hacer el código más mantenible y extensible
+- Proporcionar un flujo de trabajo más robusto y consistente
+- Facilitar la adición de nuevos estados o comportamientos en el futuro
 
 ## Diagrama UML
-![Diagrama UML del Patrón Observer](./src/main/java/VentaObserver/ObserverUML.png)
+![Diagrama UML del Patrón State](./src/main/java/CobroState/CobroState.png)
+
+## Evidencia de Funcionamiento
+
+![Diagrama UML del Patrón State](./src/main/java/CobroState/Evidencia.png)

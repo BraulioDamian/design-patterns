@@ -1,10 +1,7 @@
 package Venta;
 
 import DBObjetos.Producto;
-import VentaBridge.Efectivo;
-import VentaBridge.MetodoPago;
 
-import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -19,11 +16,35 @@ import javax.swing.event.DocumentListener;
 import VentaMemento.CobroMemento;
 import VentaMemento.CobroOriginator;
 import VentaObserver.CobroObserver;
+import VentaPayments.Efectivo;
+import VentaPayments.MetodoPago;
 import CobroFacade.CobroFacade;
 import CobroFacade.PagoFacade;
 import java.util.ArrayList;
 
+import CobroState.*;
+
+
 public class Cobro extends JFrame {
+
+    private CobroState estadoActual;
+
+    public CobroState getEstadoActual() {
+        return estadoActual;
+    }
+
+    public void setEstadoActual(CobroState estado) {
+        this.estadoActual = estado;
+        System.out.println("Cambio de estado a: " + estado.getNombreEstado());
+    }
+
+    public VentaListener getVentaListener() {
+        return this.ventaListener;
+    }
+
+    public List<Producto> getProductos() {
+        return this.productos;
+    }
 
     private ArrayList<CobroObserver> observers = new ArrayList<>();
     private static final Logger LOGGER = Logger.getLogger(Cobro.class.getName());
@@ -36,42 +57,51 @@ public class Cobro extends JFrame {
         observers.remove(observer);
     }
 
-    private void notifyMetodoPagoSeleccionado(String metodoPago) {
+    public void notifyMetodoPagoSeleccionado(String metodoPago) {
         System.out.println("Comenzando notificacion de metodo de pago: " + metodoPago);
         for (CobroObserver observer : observers) {
             System.out.println("Notificando a observador: " + observer.getClass().getSimpleName());
             LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
             observer.onMetodoPagoSeleccionado(metodoPago);
         }
-        System.out.println("Nitificacion de metodo de pago completada");
+        System.out.println("Notificacion de metodo de pago completada");
     }
 
-    private void notifyMontoRecibido(double monto) {
+    public void notifyMontoRecibido(double monto) {
         for (CobroObserver observer : observers) {
             LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
             observer.onMontoRecibido(monto);
         }
     }
 
-    private void notifyCambioCalculado(double cambio) {
+    public void notifyCambioCalculado(double cambio) {
         for (CobroObserver observer : observers) {
             LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
             observer.onCambioCalculado(cambio);
         }
     }
 
-    private void notifyVentaCompleta(double totalVenta, double montoRecibido, double cambio) {
+    public void notifyVentaCompleta(double totalVenta, double montoRecibido, double cambio) {
         for (CobroObserver observer : observers) {
             LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
             observer.onVentaCompleta(totalVenta, montoRecibido, cambio);
         }
     }
 
-    private void notifyVentaCancelada() {
+    public void notifyVentaCancelada() {
         LOGGER.log(Level.INFO, "Notificando método de pago: {0}", metodoPago);
         for (CobroObserver observer : observers) {
             observer.onVentaCancelada();
         }
+    }
+
+    public void notifyEstadoCambiado(String nuevoEstado) {
+        for (CobroObserver observer : observers) {
+            // Este método tendría que añadirse a la interfaz CobroObserver
+            // observer.onEstadoCambiado(nuevoEstado);
+            System.out.println("Cambio de estado: " + nuevoEstado);
+        }
+        LOGGER.log(Level.INFO, "Cambio de estado a: {0}", nuevoEstado);
     }
 
     private double montoTotal;
@@ -214,6 +244,8 @@ public class Cobro extends JFrame {
         cobroFacade = new CobroFacade();
         cobroFacade.iniciarCobro();
 
+        this.estadoActual = new EstadoInicial();
+
     }
 
     public Cobro(double total, List<Producto> productos) {
@@ -235,6 +267,8 @@ public class Cobro extends JFrame {
                 Venta.getInstance().setVisible(true); // Vuelve a hacer visible la ventana de venta
             }
         });
+
+        this.estadoActual = new EstadoInicial();
     }
 
     public void setVentaListener(VentaListener listener) {
@@ -262,6 +296,11 @@ public class Cobro extends JFrame {
             double montoRecibido = Double.parseDouble(recibi.getText());
             System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
             notifyMontoRecibido(montoRecibido);
+
+            if (estadoActual instanceof EstadoInicial) {
+                return;
+            }
+
             if (montoRecibido >= pre) {
                 cambio = montoRecibido - pre;
                 camb.setText(String.format("$%.2f", cambio));
@@ -525,10 +564,12 @@ public class Cobro extends JFrame {
 
     private void efectivoMouseClicked(java.awt.event.MouseEvent evt) {
         setMetodoPago(new Efectivo());
+        estadoActual.seleccionarMetodoPago(this, "Efectivo");
     }
 
     private void tarjetaMouseClicked(java.awt.event.MouseEvent evt) {
         setMetodoPago(new Efectivo());
+        estadoActual.seleccionarMetodoPago(this, "Tarjeta");
     }
 
     private MetodoPago metodoPago;
@@ -540,7 +581,7 @@ public class Cobro extends JFrame {
     }
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {
-
+        estadoActual.procesarPago(this);
         if (metodoPago == null) {
             JOptionPane.showMessageDialog(this, "Por favor, seleccione un método de pago.");
             return;
@@ -602,6 +643,7 @@ public class Cobro extends JFrame {
     }
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButton4ActionPerformed
+        estadoActual.cancelarOperacion(this);
         System.out.println("Notificando a " + observers.size() + " observadores sobre método de pago...");
         notifyVentaCancelada();
         dispose();

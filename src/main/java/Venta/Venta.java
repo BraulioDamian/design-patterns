@@ -12,6 +12,9 @@ import INVENTARIO.Principal2_0;
 import INVENTARIO.AnimacionPanel;
 import INVENTARIO.HoverEffect;
 import Principal.MenuPrincipal;
+import VentaState.EstadoInicial;
+import VentaState.VentaState;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.KeyAdapter;
@@ -26,21 +29,12 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import login.SesionManager;
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
 
 /**
  *
  * @author braul
  */
 public class Venta extends JFrame {
-
-    /**
-     * Creates new form Venta
-     */
 
     private AnimacionPanel animador; // Añade esta línea
 
@@ -57,8 +51,13 @@ public class Venta extends JFrame {
     private Usuario usuarioLogueado;
     private boolean menuDesplegado = false;
 
+
+    private VentaState estadoActual= new EstadoInicial(this);
+
     
-    private Venta() {
+    public Venta() {
+        this.estadoActual = new EstadoInicial(this);
+        System.out.println("Estado inicial: " + estadoActual.getClass().getSimpleName());
         setUndecorated(true); // Hacer que el JFrame sea indecorado
 
         initComponents();
@@ -144,7 +143,31 @@ public class Venta extends JFrame {
     cargarProductosConAjusteDePrecio();
     
     agregarEfectoHover();
+
     
+    }
+
+    public void setEstado(VentaState nuevoEstado) {
+        if (nuevoEstado == null) {
+            throw new IllegalArgumentException("El nuevo estado no puede ser nulo.");
+        }
+        this.estadoActual = nuevoEstado;
+    }
+
+    public void agregarProducto() {
+        estadoActual.agregarProducto();
+    }
+
+    public void calcularTotales() {
+        estadoActual.calcularTotales();
+    }
+
+    public void cobrar() {
+        estadoActual.cobrar();
+    }
+
+    public void cancelar() {
+        estadoActual.cancelar();
     }
     
     
@@ -159,7 +182,7 @@ public class Venta extends JFrame {
     }
     
     
-        private Venta(Usuario usuario) {
+    private Venta(Usuario usuario) {
         setUndecorated(true); // Hacer que el JFrame sea indecorado
 
         this.usuarioLogueado = usuario;
@@ -254,10 +277,6 @@ public class Venta extends JFrame {
     
     }
         
-        
-        
-
-        
     public static Venta getInstance() {
         if (instance == null) {
             Usuario usuario = SesionManager.getInstance().getUsuarioLogueado();
@@ -267,7 +286,7 @@ public class Venta extends JFrame {
     }
 
     
-     public void initialize(Usuario usuario) {
+    public void initialize(Usuario usuario) {
         this.usuarioLogueado = usuario;
         configurarVisibilidadComponentes();
     }  
@@ -276,9 +295,8 @@ public class Venta extends JFrame {
     public static void resetInstance() {
         instance = null;
     }
-  
-     
-         private void configurarVisibilidadComponentes() {
+
+    private void configurarVisibilidadComponentes() {
         if (usuarioLogueado.getRol() == Usuario.Rol.EMPLEADO) {
             Usuarios.setVisible(false);
             Configuracion.setVisible(false);
@@ -288,7 +306,6 @@ public class Venta extends JFrame {
             Configuracion.setVisible(true);
         }
     }
-   
 
     private void cargarProductosConAjusteDePrecio() {
         try {
@@ -312,7 +329,6 @@ public class Venta extends JFrame {
         }
     }
 
-    
     private void actualizarTablaProductos() {
         DefaultTableModel model = (DefaultTableModel) TablaBusqueda.getModel();
         model.setRowCount(0);
@@ -330,11 +346,6 @@ public class Venta extends JFrame {
         }
     }
 
-
-
-
-    
-    
     private void inicializarTablaCobro() {
         DefaultTableModel modelo = (DefaultTableModel) TablaCobro.getModel();
         modelo.addTableModelListener(new TableModelListener() {
@@ -350,7 +361,6 @@ public class Venta extends JFrame {
             }
         });
     }
-
 
     private void verificarCantidad(int fila, int columna) {
         DefaultTableModel modelo = (DefaultTableModel) TablaCobro.getModel();
@@ -374,8 +384,7 @@ public class Venta extends JFrame {
         }
     }
 
-
-private void actualizarImporte(int fila) {
+    private void actualizarImporte(int fila) {
     DefaultTableModel modelo = (DefaultTableModel) TablaCobro.getModel();
     try {
         int unidades = Integer.parseInt(modelo.getValueAt(fila, 2).toString());
@@ -390,10 +399,7 @@ private void actualizarImporte(int fila) {
     }
 }
 
-
-
-
-private void CalcularTotales() {
+    private void CalcularTotales() {
     DefaultTableModel modelo = (DefaultTableModel) TablaCobro.getModel();
     double subtotal = 0.0, totalIVA = 0.0, total = 0.0;
     for (int i = 0; i < modelo.getRowCount(); i++) {
@@ -407,12 +413,9 @@ private void CalcularTotales() {
     lblSubtotal.setText(String.format("%.2f", subtotal));
     lblIva.setText(String.format("%.2f", totalIVA));
     lblTotal.setText(String.format("%.2f", total));
+
+    // calcularTotales();
 }
-
-
-
-
-
     
     private void cambiarSeleccionEnTabla(int keyCode) {
         int rowCount = TablaBusqueda.getRowCount();
@@ -428,10 +431,6 @@ private void CalcularTotales() {
             TablaBusqueda.scrollRectToVisible(TablaBusqueda.getCellRect(selectedRow, 0, true));
         }
     }
-
-
-    
-    
     
     private void ajustarAlturaComponentes() {
         int filaAltura = TablaBusqueda.getRowHeight();
@@ -448,13 +447,6 @@ private void CalcularTotales() {
         jPanel6.repaint(); // Redibuja el panel
     }
     
-
-
-  
-
-
-
-
     private void initProductosConArea() {
         try {
             CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
@@ -535,25 +527,16 @@ private void agregarProductoACobroYCerrarTabla() {
 
         CalcularTotales();
         jPanel6.setVisible(false); // Oculta jPanel6 al seleccionar un producto
+
+        agregarProducto();
     }
 }
 
-
-
-    
     public double precio(int u, double p){
         double t = u * p;
         return t;
     }
 
-    
-       
- 
-
-
-
-    
-    
     // Método returnTotal corregido en la clase Venta
     public double returnTotal() {
         double total = 0;
@@ -578,8 +561,6 @@ private void agregarProductoACobroYCerrarTabla() {
         return total;
     }
 
-
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -973,6 +954,8 @@ private void agregarProductoACobroYCerrarTabla() {
                 // Aquí también podrías actualizar otros componentes si es necesario
             });
             ventanaCobro.setVisible(true);
+
+            cobrar();
         } else {
             JOptionPane.showMessageDialog(this, "Error al completar la venta.");
         }
@@ -1074,6 +1057,10 @@ Principal2_0.getInstance().actualizarTablaInventario();
 
         // Llamar a cualquier método que necesite ejecutar después de eliminar una fila, como recalcular totales si es necesario
         CalcularTotales();
+
+        if (modelo.getRowCount() == 0) {
+            cancelar();
+        } 
     } else {
         // Mostrar un mensaje si no hay fila seleccionada
         JOptionPane.showMessageDialog(this, "Por favor seleccione una fila para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);

@@ -41,9 +41,11 @@ DIAGRAMA_UML.md
 README.docx
 portada.pdf
 READMEmementoyfacade.md
+README_Observer.md
 T2_Memento-Facade_Hernández Ruiz Kevin Eduardo.pdf
 tickets
 VentaMemento
 VentaBridge
+VentaState
 CobroFacade
 .gitignore
