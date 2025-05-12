@@ -2,6 +2,7 @@ package Venta;
 
 
 import ConexionDB.Conexion_DB;
+import Configuraciones.Command;
 import Configuraciones.Configuraciones;
 import Configuraciones.Estilos;
 import Consultas.CONSULTASDAO;
@@ -26,6 +27,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import login.SesionManager;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -946,42 +948,28 @@ private void agregarProductoACobroYCerrarTabla() {
     }//GEN-LAST:event_BusquedaActionPerformed
 
     private void btnCobroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCobroActionPerformed
-    List<Producto> productosSeleccionados = obtenerProductosSeleccionadosEnTabla();
-    if (productosSeleccionados.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "No hay productos seleccionados para la venta.");
-        return;
-    }
-    try {
-        // Obtención del usuario logueado
-        Usuario usuarioActual = SesionManager.getInstance().getUsuarioLogueado();
-        if (usuarioActual == null) {
-            JOptionPane.showMessageDialog(this, "No hay usuario logueado.");
-            return;
+        List<Producto> productos = obtenerProductosSeleccionadosEnTabla();
+        Usuario usuario = SesionManager.getInstance().getUsuarioLogueado();
+    
+        // Crear y ejecutar el comando
+        Command cmdVenta = null;
+        try {
+            cmdVenta = new ProcesarVentaCommand(
+                new CONSULTASDAO(Conexion_DB.getConexion()),
+                usuario.getUsuarioID(),
+                productos
+            );
+        } catch (SQLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-
-        // Creación de la instancia DAO y ejecución de la venta
-        CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
-        if (dao.completarVenta(usuarioActual.getUsuarioID(), productosSeleccionados)) {
-            int ventaId = dao.getUltimaVentaIdPorUsuario(usuarioActual.getUsuarioID()); // Método para obtener el último ID de venta por usuario
-            List<Producto> detallesVenta = dao.obtenerDetallesVenta(ventaId); // Método para obtener los detalles de la venta
-
-            double totalVenta = returnTotal(); // Asegúrate de que este método calcula el total correcto
-            Cobro ventanaCobro = new Cobro(totalVenta, productosSeleccionados);
-            ventanaCobro.setVentaListener(() -> {
-                // Limpiar la tabla cuando se completa la venta
-                ((DefaultTableModel) TablaCobro.getModel()).setRowCount(0);
-                // Aquí también podrías actualizar otros componentes si es necesario
-            });
-            ventanaCobro.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al completar la venta.");
+    
+        try {
+            cmdVenta.execute();
+            JOptionPane.showMessageDialog(this, "Venta completada exitosamente.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
         }
-    } catch (SQLException ex) {
-        JOptionPane.showMessageDialog(this, "Error de conexión: " + ex.getMessage(), "Error de Conexión", JOptionPane.ERROR_MESSAGE);
-        ex.printStackTrace();
-    }
-    // Dentro de algún método en la clase Venta
-Principal2_0.getInstance().actualizarTablaInventario();
 
     }//GEN-LAST:event_btnCobroActionPerformed
 

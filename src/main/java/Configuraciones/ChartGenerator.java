@@ -29,7 +29,7 @@ public class ChartGenerator {
         generarGraficaProductosMenosVendidos(fechaInicio, fechaFin, "productos_menos_vendidos.png");
     }
 
-    private String generarGraficaVentasPorProducto(Date fechaInicio, Date fechaFin, String rutaArchivo) throws IOException, SQLException {
+    String generarGraficaVentasPorProducto(Date fechaInicio, Date fechaFin, String rutaArchivo) throws IOException, SQLException {
         Map<String, Integer> ventasPorProducto;
         try {
             CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
@@ -57,7 +57,7 @@ public class ChartGenerator {
         return rutaArchivo;
     }
 
-    private String generarGraficaVentasPorEmpleado(Date fechaInicio, Date fechaFin, String rutaArchivo) throws IOException, SQLException {
+    String generarGraficaVentasPorEmpleado(Date fechaInicio, Date fechaFin, String rutaArchivo) throws IOException, SQLException {
         Map<String, Integer> ventasPorEmpleado;
         try {
             CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());

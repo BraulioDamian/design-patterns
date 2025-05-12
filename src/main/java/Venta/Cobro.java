@@ -374,7 +374,7 @@ public class Cobro extends JFrame {
 
 
     
-    private String generarPDF(List<Producto> productosSeleccionados, double total, double pago, double cambio) {
+    String generarPDF(List<Producto> productosSeleccionados, double total, double pago, double cambio) {
         Document document = new Document();
         String fileName = "Ticket_" + System.currentTimeMillis() + ".pdf";  // Nombre del archivo con marca de tiempo
         String filePath = "./tickets/" + fileName;  // Guardar en un directorio específico

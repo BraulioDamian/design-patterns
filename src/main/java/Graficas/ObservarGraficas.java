@@ -11,7 +11,10 @@ package Graficas;
 
 
 import ConexionDB.Conexion_DB;
+import Configuraciones.ChartGenerator;
+import Configuraciones.Command;
 import Configuraciones.Configuraciones;
+import Configuraciones.GenerarGraficaCommand;
 import Consultas.CONSULTASDAO;
 import DBObjetos.Usuario;
 import INVENTARIO.AnimacionPanel;
@@ -83,36 +86,14 @@ public class ObservarGraficas extends JFrame {
     }
        
            private void crearGraficas(Date fechaInicio, Date fechaFin) {
-        try {
-            CONSULTASDAO dao = new CONSULTASDAO(Conexion_DB.getConexion());
+        ChartGenerator generador = new ChartGenerator();
+    Command cmdGrafica = new GenerarGraficaCommand(generador, "producto", fechaInicio, fechaFin);
 
-            Map<String, Integer> ventas = dao.obtenerVentasPorProducto(new java.sql.Date(fechaInicio.getTime()), new java.sql.Date(fechaFin.getTime()));
-            JPanel panelGraficoVentas = crearGraficoVentas(ventas);
-            PanelMostrarGrafic.removeAll();
-            PanelMostrarGrafic.setLayout(new BorderLayout());
-            PanelMostrarGrafic.add(panelGraficoVentas, BorderLayout.CENTER);
-            PanelMostrarGrafic.revalidate();
-            PanelMostrarGrafic.repaint();
-
-            Map<String, Integer> ventasEmpleado = dao.obtenerVentasPorEmpleado(new java.sql.Date(fechaInicio.getTime()), new java.sql.Date(fechaFin.getTime()));
-            JPanel panelGraficoEmpleados = crearGraficoVentasEmpleado(ventasEmpleado);
-            PanelMostrarUsuarios.removeAll();
-            PanelMostrarUsuarios.setLayout(new BorderLayout());
-            PanelMostrarUsuarios.add(panelGraficoEmpleados, BorderLayout.CENTER);
-            PanelMostrarUsuarios.revalidate();
-            PanelMostrarUsuarios.repaint();
-
-            Map<String, Integer> menosVendidos = dao.obtenerProductosMenosVendidos(new java.sql.Date(fechaInicio.getTime()), new java.sql.Date(fechaFin.getTime()));
-            JPanel panelGraficoMenosVendidos = crearGraficoProductosMenosVendidos(menosVendidos);
-            PanelMostrarMenosVendidos.removeAll();
-            PanelMostrarMenosVendidos.setLayout(new BorderLayout());
-            PanelMostrarMenosVendidos.add(panelGraficoMenosVendidos, BorderLayout.CENTER);
-            PanelMostrarMenosVendidos.revalidate();
-            PanelMostrarMenosVendidos.repaint();
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al conectar con la base de datos", "Error de Base de Datos", JOptionPane.ERROR_MESSAGE);
-        }
+    try {
+        cmdGrafica.execute();
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error al generar gráfica: " + e.getMessage());
+    }
     }
        
  /*

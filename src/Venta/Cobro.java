@@ -317,39 +317,18 @@ public class Cobro extends javax.swing.JFrame {
     }//GEN-LAST:event_efectivoMouseClicked
 
     private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
-    // Primero, verifica si algún método de pago ha sido seleccionado.
-    if (!efectivo.isSelected() && !tarjeta.isSelected()) {
-        JOptionPane.showMessageDialog(this, "Por favor, seleccione un método de pago.");
-        return;
-    }
-
-    // Intenta procesar el pago y generar/enviar el ticket.
-    try {
-        double pago = Double.parseDouble(recibi.getText());  // Intenta obtener el pago ingresado.
-        if (pago < pre) {
-            JOptionPane.showMessageDialog(this, "El monto pagado no es suficiente para cubrir el total de la compra.");
-            return;
+        Command cmdTicket = new GenerarTicketCommand(
+            this,
+            productos,
+            pre,
+            Double.parseDouble(recibi.getText())
+        );
+    
+        try {
+            cmdTicket.execute();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al generar ticket: " + e.getMessage());
         }
-        cambio = pago - pre;
-        camb.setText("$" + String.format("%.2f", cambio));
-
-        // Genera el ticket y obtiene la ruta del PDF generado.
-        String pdfPath = generarPDF(productos, pre, pago, cambio);
-        if (pdfPath != null) {
-            // Si el archivo PDF se generó correctamente, procede a enviarlo por correo.
-            String emailDestino = txtCorreo.getText();
-            if (!emailDestino.isEmpty()) {
-                EnvioTicket.enviarConArchivo(emailDestino, pdfPath);  // Enviar el PDF por correo
-                JOptionPane.showMessageDialog(this, "El ticket ha sido enviado correctamente a: " + emailDestino);
-            } else {
-                JOptionPane.showMessageDialog(this, "Por favor, ingrese un correo electrónico válido.");
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al generar el ticket PDF.");
-        }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Por favor, introduzca un monto válido en el campo 'Recibí'.");
-    }
 
 
     }//GEN-LAST:event_btnAceptarActionPerformed
