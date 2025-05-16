@@ -25,7 +25,6 @@ public class GenerarGraficaCommand implements Command {
             case "empleado":
                 generador.generarGraficaVentasPorEmpleado(fechaInicio, fechaFin, "ventas_por_empleado.png");
                 break;
-            // Agregar más casos según sea necesario
         }
     }
 }

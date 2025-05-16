@@ -2,6 +2,9 @@ package Venta;
 
 import java.util.List;
 
+import Configuraciones.Command;
+import DBObjetos.Producto;
+
 public class GenerarTicketCommand implements Command {
     private Cobro cobro;
     private List<Producto> productos;
