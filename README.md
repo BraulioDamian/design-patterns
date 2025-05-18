@@ -21,12 +21,8 @@ En el contexto de la Tienda de Abarrotes, este patrón se utiliza para implement
 
 ## Diagrama UML
 
-```
-
 ![Diagrama UML](UIML-Interpreter.png)
 
-    
-```
 
 ## Estructura del Patrón
 
