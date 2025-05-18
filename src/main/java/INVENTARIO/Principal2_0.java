@@ -350,6 +350,7 @@ private void agregarFilaProducto(DefaultTableModel model, Producto prod) {
         jLabel3 = new JLabel();
         Panel2 = new javax.swing.JPanel();
         Buscar = new JTextField();
+        busquedaAvanzadaBtn = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablita = new javax.swing.JTable();
         desplegable = new javax.swing.JComboBox<>();
@@ -555,6 +556,14 @@ private void agregarFilaProducto(DefaultTableModel model, Producto prod) {
                 BuscarKeyReleased(evt);
             }
         });
+        
+        busquedaAvanzadaBtn.setText("Búsqueda Avanzada");
+        busquedaAvanzadaBtn.setToolTipText("Utiliza el patrón Interpreter para búsquedas avanzadas");
+        busquedaAvanzadaBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                busquedaAvanzadaBtnActionPerformed(evt);
+            }
+        });
 
         tablita.setModel(new DefaultTableModel(
             new Object [][] {
@@ -722,7 +731,9 @@ private void agregarFilaProducto(DefaultTableModel model, Producto prod) {
                             .addGroup(Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(Panel2Layout.createSequentialGroup()
                                     .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(482, 482, 482)
+                                    .addGap(18, 18, 18)
+                                    .addComponent(busquedaAvanzadaBtn)
+                                    .addGap(290, 290, 290)
                                     .addComponent(desplegable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 966, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGap(18, 18, 18)
@@ -748,8 +759,10 @@ private void agregarFilaProducto(DefaultTableModel model, Producto prod) {
                 .addGroup(Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(Panel2Layout.createSequentialGroup()
                         .addGroup(Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(desplegable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(busquedaAvanzadaBtn)
+                                .addComponent(desplegable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(35, 35, 35)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(Panel2Layout.createSequentialGroup()
@@ -1412,6 +1425,12 @@ private void cargarAreasDesdeBD() {
             mostrarCalendario(Caducidad);
         }
     }//GEN-LAST:event_CaducidadMouseClicked
+    
+    private void busquedaAvanzadaBtnActionPerformed(java.awt.event.ActionEvent evt) {                                                  
+        // Abrir la ventana de búsqueda avanzada con el patrón Interpreter
+        PatronInterpreter.ConsultaProductosUI consultaUI = new PatronInterpreter.ConsultaProductosUI();
+        consultaUI.setVisible(true);
+    }
     // Método para cerrar sesión
     private void logout() {
         SesionManager.getInstance().logout();
@@ -1496,6 +1515,7 @@ private void cargarAreasDesdeBD() {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private JLabel Analisis;
     private JTextField Buscar;
+    private javax.swing.JButton busquedaAvanzadaBtn;
     private JTextField Caducidad;
     private JLabel Configuracion;
     private JTextField Contenido;
