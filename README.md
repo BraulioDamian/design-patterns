@@ -22,7 +22,10 @@ En el contexto de la Tienda de Abarrotes, este patrón se utiliza para implement
 ## Diagrama UML
 
 ```
-![pLRDRjim3BuRy3lecA1riULO54MpfWK2v6zD-W2Cp0PgPIcJv2BhjdUVP5k94yjf1kGmdspo-_WdYlITDg1Cdl4uqczCh451HYW7hVl6ABRC3Gwf57FsWUHB7CKH4mRL2r0a3vkrGgsP5EHN717xN912QyMcCsBQtCoKJ7Dgv2rPLs-wIwx9lYwE_ZZ3iDH60JMbTx](https://github.com/user-attachments/assets/418cb67e-e1c6-43a9-ac8f-b7f2d532cd9b)    
+
+![pLRDRjim3BuRy3lecA1riULO54MpfWK2v6zD-W2Cp0PgPIcJv2BhjdUVP5k94yjf1kGmdspo-_WdYlITDg1Cdl4uqczCh451HYW7hVl6ABRC3Gwf57FsWUHB7CKH4mRL2r0a3vkrGgsP5EHN717xN912QyMcCsBQtCoKJ7Dgv2rPLs-wIwx9lYwE_ZZ3iDH60JMbTx](https://github.com/user-attachments/assets/b2088b55-1529-45b5-b967-559533321d85)
+
+
 ```
 
 ## Estructura del Patrón
