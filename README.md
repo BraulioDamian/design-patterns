@@ -23,9 +23,107 @@ En el contexto de la Tienda de Abarrotes, este patrón se utiliza para implement
 
 ```
 
-![pLRDRjim3BuRy3lecA1riULO54MpfWK2v6zD-W2Cp0PgPIcJv2BhjdUVP5k94yjf1kGmdspo-_WdYlITDg1Cdl4uqczCh451HYW7hVl6ABRC3Gwf57FsWUHB7CKH4mRL2r0a3vkrGgsP5EHN717xN912QyMcCsBQtCoKJ7Dgv2rPLs-wIwx9lYwE_ZZ3iDH60JMbTx](https://github.com/user-attachments/assets/b2088b55-1529-45b5-b967-559533321d85)
+@startuml
+skinparam classAttributeIconSize 0
 
+interface Expression {
+    + interpret(List<Producto> productos) : List<Producto>
+}
 
+abstract class TerminalExpression
+abstract class NonTerminalExpression
+
+class PrecioBajoExpression {
+    - precioLimite : double
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class AreaExpression {
+    - areaId : int
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class DisponibilidadExpression {
+    - cantidadMinima : int
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class MarcaExpression {
+    - marca : String
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class AllProductsExpression {
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class AndExpression {
+    - expr1 : Expression
+    - expr2 : Expression
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class OrExpression {
+    - expr1 : Expression
+    - expr2 : Expression
+    + interpret(List<Producto> productos) : List<Producto>
+}
+
+class QueryParser {
+    + parse(String query) : Expression
+    + parseNaturalLanguage(String query) : Expression
+}
+
+class InterpreterManager {
+    - instance : InterpreterManager
+    - conexion : Connection
+    - consultasDao : CONSULTASDAO
+    + getInstance() : InterpreterManager
+    + ejecutarConsultaFormal(String query) : List<Producto>
+    + ejecutarConsultaNatural(String query) : List<Producto>
+    + consultaAvanzada(int areaId, double precioMax, int stockMinimo) : List<Producto>
+    + obtenerProductosPorMarca(String marca) : List<Producto>
+    + obtenerProductosPorArea(int areaId) : List<Producto>
+    + obtenerProductosEconomicos(double precioMax) : List<Producto>
+    + obtenerProductosDisponibles(int stockMinimo) : List<Producto>
+}
+
+class ConsultaProductosUI {
+    - interpreterManager : InterpreterManager
+    - consultaTextField
+    - resultadosTable
+    - tableModel
+    - formalRadio
+    - naturalRadio
+    + ejecutarConsulta() : void
+    + mostrarResultados(List<Producto> productos) : void
+}
+
+Expression <|-- TerminalExpression
+Expression <|-- NonTerminalExpression
+
+TerminalExpression <|-- PrecioBajoExpression
+TerminalExpression <|-- AreaExpression
+TerminalExpression <|-- DisponibilidadExpression
+TerminalExpression <|-- MarcaExpression
+TerminalExpression <|-- AllProductsExpression
+
+NonTerminalExpression <|-- AndExpression
+NonTerminalExpression <|-- OrExpression
+
+AndExpression --> Expression : expr1
+AndExpression --> Expression : expr2
+OrExpression --> Expression : expr1
+OrExpression --> Expression : expr2
+
+QueryParser ..> Expression : creates
+InterpreterManager --> Expression : uses
+InterpreterManager --> QueryParser : uses
+ConsultaProductosUI --> InterpreterManager : uses
+
+@enduml
+
+    
 ```
 
 ## Estructura del Patrón
@@ -896,4 +994,3 @@ List<Producto> consultaProgramatica = InterpreterManager.getInstance().consultaA
 5. **Probar**: Usa la clase `ConsultaProductosUI` como punto de entrada para probar la funcionalidad.
 
 ---
-
