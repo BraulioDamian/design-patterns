@@ -23,7 +23,7 @@ En el contexto de la Tienda de Abarrotes, este patrón se utiliza para implement
 
 ```
 
-![Diagrama UML](UML-Interpreter.png)
+![Diagrama UML](UIML-Interpreter.png)
 
     
 ```
