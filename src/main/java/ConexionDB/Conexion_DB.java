@@ -83,8 +83,9 @@ public class Conexion_DB {
         throw new SQLException("No se pudo conectar a la base de datos: " + 
                 (lastException != null ? lastException.getMessage() : "razón desconocida"));
     }
+/*    public static Connection getConexion() throws SQLException {
+        return DriverManager.getConnection(URL, USUARIO, CONTRASENA);
 
-    /**
      * Prueba la conexión a la base de datos.
      * 
      * @return true si la conexión es exitosa, false en caso contrario
